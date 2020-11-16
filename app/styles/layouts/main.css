@@ -116,11 +116,11 @@
 }
 
 .gh-nav-menu-dropdown .dropdown-menu {
-    top: -315px;
-    left: 30px;
+    top: -344px;
+    left: 20px;
     margin: 10px 0 0;
     box-shadow: 0 0 1px rgba(0, 0, 0, 0.1), 0 0 3px rgba(0, 0, 0, 0.08), 0 18px 45px -5px rgba(0, 0, 0, 0.15);
-    min-width: 244px;
+    min-width: 280px;
     padding: 6px 0;
 }
 
@@ -129,7 +129,7 @@
     font-size: 1.4rem;
     margin: 0;
     width: unset;
-    padding: 7px 14px 8px;
+    padding: 10px 24px 11px;
 }
 
 .gh-nav-menu-dropdown .dropdown-menu>li>button {
@@ -360,6 +360,25 @@
     stroke: var(--active-menu-color);
 }
 
+.gh-nav-button-expand.expanded {
+    padding-left: 9px;
+}
+
+.gh-nav-button-expand svg {
+    width: 9px;
+    height: 9px;
+    margin-bottom: 1px;
+}
+
+.gh-nav-button-expand svg path {
+    stroke-width: 2.0px;
+    stroke: var(--midgrey);
+}
+
+.gh-nav-button-expand:hover svg path {
+    stroke: color-mod(var(--darkgrey) l(-5%));
+}
+
 .gh-nav-list .gh-secondary-action {
     position: absolute;
     z-index: 999;
@@ -427,7 +446,7 @@
 }
 
 .gh-nav-bottom {
-    margin: 12px 5px 24px;
+    margin: 0 5px;
 }
 
 .gh-nav-bottom .ember-basic-dropdown-trigger:hover {
@@ -438,6 +457,81 @@
 .gh-nav-pro .gh-btn-green {
     margin: 7px 10px 7px 20px !important;
     width: calc(100% - 40px) !important;
+}
+
+.gh-nav-view-list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    font-size: 1.4rem;
+    line-height: 1.6em;
+}
+
+.gh-nav-view-list a {
+    padding-left: 58px;
+    padding-right: 12px;
+}
+
+.gh-nav-viewname {
+    display: inline-block;
+    max-width: 160px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.gh-nav-view-list .circle {
+    display: block;
+    border-radius: 999px;
+    border: 3px solid var(--midgrey);
+    width: 12px;
+    height: 12px;
+    margin: 0 10px 0 2px;
+}
+
+.gh-nav-view-list .svg-midgrey .circle {
+    border-color: var(--midgrey);
+    background: var(--midgrey);
+}
+
+.gh-nav-view-list .svg-blue .circle {
+    border-color: var(--blue);
+    background: var(--blue);
+}
+
+.gh-nav-view-list .svg-green .circle {
+    border-color: var(--green);
+    background: var(--green);
+}
+
+.gh-nav-view-list .svg-red .circle {
+    border-color: var(--red);
+    background: var(--red);
+}
+
+.gh-nav-view-list .svg-teal .circle {
+    border-color: #4dcddc;
+    background: #4dcddc;
+}
+
+.gh-nav-view-list .svg-purple .circle {
+    border-color: var(--purple);
+    background: var(--purple);
+}
+
+.gh-nav-view-list .svg-yellow .circle {
+    border-color: var(--yellow);
+    background: var(--yellow);
+}
+
+.gh-nav-view-list .svg-orange .circle {
+    border-color: #fe8b05;
+    background: #fe8b05;
+}
+
+.gh-nav-view-list .svg-pink .circle {
+    border-color: var(--pink);
+    background: var(--pink);
 }
 
 /* Mobile Nav Menu (Slides out)
@@ -521,6 +615,12 @@
         text-align: center;
         font-size: 17px;
     }
+
+    .gh-nav-button-expand svg {
+        width: 9px;
+        height: 9px;
+        margin-bottom: 1px;
+    }
 }
 
 /* Mobile Nav Bar (Sits at bottom of screen)
@@ -535,6 +635,12 @@
         padding-bottom: 55px;
     }
 
+    @supports (padding-bottom: env(safe-area-inset-bottom)) {
+        .gh-viewport {
+            padding-bottom: calc(55px + env(safe-area-inset-bottom, 0px));
+        }
+    }
+
     .gh-mobile-nav-bar {
         display: flex;
         align-items: center;
@@ -545,6 +651,12 @@
         right: 0;
         background: #fff;
         border-top: var(--lightgrey) 1px solid;
+    }
+
+    @supports (padding-bottom: env(safe-area-inset-bottom)) {
+        .gh-mobile-nav-bar {
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
     }
 
     .gh-mobile-nav-bar a,
@@ -655,22 +767,19 @@
     display: flex;
     align-items: center;
     overflow: hidden;
-    margin: -3px 0 0 1px;
+    margin: -3px 0 0 0;
     padding: 0;
     text-overflow: ellipsis;
     white-space: nowrap;
     font-size: 2.8rem;
     line-height: 1.2em;
     font-weight: 600;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.2px;
     /* match button height to avoid jump on navigation between screens*/
     min-height: 35px;
 }
 
 @media (max-width: 500px) {
-    .gh-canvas-title {
-        display: block;
-    }
     .gh-canvas-title svg {
         margin: 0 5px;
     }
@@ -690,6 +799,15 @@
     width: 0.6em;
     height: 0.6em;
     margin: 0 10px;
+}
+
+.gh-btn-edit-view {
+    opacity: 0;
+    transition: all 0.3s ease-in-out;
+}
+
+.gh-canvas-title:hover .gh-btn-edit-view {
+    opacity: 1.0;
 }
 
 /* What's new badges
@@ -727,7 +845,7 @@
     font-size: 2.8rem;
     line-height: 1.2em;
     font-weight: 600;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.2px;
     min-height: 35px;
 }
 

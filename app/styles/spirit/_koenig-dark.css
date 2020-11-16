@@ -19,7 +19,7 @@
 
 .kg-action-bar:before {
     position: absolute;
-    top: 40px;
+    top: 36px;
     left: calc(50% - 10px);
     width: 0;
     border-top: 10px solid var(--whitegrey);
@@ -62,6 +62,22 @@
     fill: var(--darkgrey);
 }
 
+.kg-cardmenu-card-hover svg [data-selector="bg"] {
+    fill: var(--lightgrey-d2);
+}
+
+.kg-cardmenu-card-hover svg [data-selector="fold"] {
+    fill: var(--midlightgrey-l2);
+}
+
+.kg-cardmenu-card-hover svg [data-selector="line"] {
+    fill: var(--darkgrey);
+}
+
+.kg-cardmenu-card-hover:hover svg [data-selector="bg"] {
+    fill: var(--lightgrey-d2);
+}
+
 
 /* Card styles */
 
@@ -72,6 +88,12 @@
 .koenig-editor .gh-markdown-editor .editor-toolbar {
     background: color-mod(var(--whitegrey) l(-2%) s(+2%));
     border-top-color: var(--whitegrey-d2);
+}
+
+.kg-card-selected,
+.kg-card-selected:hover {
+    background-color: transparent !important;
+    border-color: transparent !important;
 }
 
 .koenig-card-html--editor .CodeMirror {

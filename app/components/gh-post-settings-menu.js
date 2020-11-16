@@ -15,6 +15,7 @@ export default Component.extend(SettingsMenuMixin, {
     feature: service(),
     store: service(),
     config: service(),
+    ajax: service(),
     ghostPaths: service(),
     notifications: service(),
     slugGenerator: service(),
@@ -39,14 +40,15 @@ export default Component.extend(SettingsMenuMixin, {
     twitterTitleScratch: alias('post.twitterTitleScratch'),
     slugValue: boundOneWay('post.slug'),
 
-    facebookDescription: or('ogDescriptionScratch', 'customExcerptScratch', 'seoDescription'),
+    facebookDescription: or('ogDescriptionScratch', 'customExcerptScratch', 'seoDescription', 'post.excerpt', 'settings.description', ''),
     facebookImage: or('post.ogImage', 'post.featureImage'),
     facebookTitle: or('ogTitleScratch', 'seoTitle'),
-    twitterDescription: or('twitterDescriptionScratch', 'customExcerptScratch', 'seoDescription'),
+    twitterDescription: or('twitterDescriptionScratch', 'customExcerptScratch', 'seoDescription', 'post.excerpt', 'settings.description', ''),
     twitterImage: or('post.twitterImage', 'post.featureImage'),
     twitterTitle: or('twitterTitleScratch', 'seoTitle'),
 
     showVisibilityInput: or('session.user.isOwner', 'session.user.isAdmin', 'session.user.isEditor'),
+    showEmailNewsletter: or('session.user.isOwner', 'session.user.isAdmin', 'session.user.isEditor'),
 
     seoTitle: computed('metaTitleScratch', 'post.titleScratch', function () {
         return this.metaTitleScratch || this.post.titleScratch || '(Untitled)';

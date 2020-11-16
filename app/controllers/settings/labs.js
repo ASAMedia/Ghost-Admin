@@ -53,6 +53,9 @@ export default Controller.extend({
     jsonMimeType: null,
     yamlExtension: null,
     yamlMimeType: null,
+
+    yamlAccept: null,
+
     init() {
         this._super(...arguments);
         this.importMimeType = IMPORT_MIME_TYPES;
@@ -60,6 +63,9 @@ export default Controller.extend({
         this.jsonMimeType = JSON_MIME_TYPE;
         this.yamlExtension = YAML_EXTENSION;
         this.yamlMimeType = YAML_MIME_TYPE;
+        // (macOS) Safari only allows files with the `yml` extension to be selected with the specified MIME types
+        // so explicitly allow the `yaml` extension.
+        this.yamlAccept = [...this.yamlMimeType, ...Array.from(this.yamlExtension, extension => '.' + extension)];
     },
 
     actions: {
@@ -104,7 +110,7 @@ export default Controller.extend({
                     this.set('session.user', store.findRecord('user', currentUserId));
 
                     // TODO: keep as notification, add link to view content
-                    notifications.showNotification('Import successful.', {key: 'import.upload.success'});
+                    notifications.showNotification('Import successful', {key: 'import.upload.success'});
 
                     // reload settings
                     return this.settings.reload().then((settings) => {
@@ -155,14 +161,6 @@ export default Controller.extend({
                 .closest('.gh-setting-action')
                 .find('input[type="file"]')
                 .click();
-        },
-
-        setDefaultContentVisibility(value) {
-            this.set('settings.defaultContentVisibility', value);
-        },
-
-        setMembersSubscriptionSettings(subscriptionSettings) {
-            this.set('settings.membersSubscriptionSettings', JSON.stringify(subscriptionSettings));
         }
     },
 
@@ -206,23 +204,6 @@ export default Controller.extend({
 
         return RSVP.resolve();
     },
-
-    sendTestEmail: task(function* () {
-        let notifications = this.notifications;
-        let emailUrl = this.get('ghostPaths.url').api('mail', 'test');
-
-        try {
-            yield this.ajax.post(emailUrl);
-            notifications.showAlert('Check your email for the test message.', {type: 'info', key: 'test-email.send.success'});
-            return true;
-        } catch (error) {
-            notifications.showAPIError(error, {key: 'test-email:send'});
-        }
-    }).drop(),
-
-    saveSettings: task(function* () {
-        return yield this.settings.save();
-    }).drop(),
 
     redirectUploadResult: task(function* (success) {
         this.set('redirectSuccess', success);

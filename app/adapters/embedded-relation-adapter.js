@@ -75,12 +75,13 @@ export default BaseAdapter.extend({
     buildIncludeURL(store, modelName, id, snapshot, requestType, query) {
         let includes = this.getEmbeddedRelations(store, modelName);
         let url = this.buildURL(modelName, id, snapshot, requestType, query);
+        let parsedUrl = new URL(url);
 
         if (includes.length) {
-            url += `?include=${includes.map(underscore).join(',')}`;
+            parsedUrl.searchParams.append('include', includes.map(underscore).join(','));
         }
 
-        return url;
+        return parsedUrl.toString();
     },
 
     buildQuery(store, modelName, options) {
@@ -131,8 +132,8 @@ export default BaseAdapter.extend({
             }
         });
 
-        embedded.forEach(([relName, modelName]) => {
-            this.getEmbeddedRelations(store, modelName).forEach((name) => {
+        embedded.forEach(([relName, embeddedModelName]) => {
+            this.getEmbeddedRelations(store, embeddedModelName).forEach((name) => {
                 ret.push(`${relName}.${name}`);
             });
         });

@@ -112,6 +112,36 @@ export function isThemeValidationError(errorOrStatus, payload) {
     }
 }
 
+/* Host limit reached/exceeded error */
+
+export class HostLimitError extends AjaxError {
+    constructor(payload) {
+        super(payload, 'A hosting plan limit was reached or exceeded.');
+    }
+}
+
+export function isHostLimitError(errorOrStatus, payload) {
+    if (isAjaxError(errorOrStatus)) {
+        return errorOrStatus instanceof HostLimitError;
+    } else {
+        return get(payload || {}, 'errors.firstObject.type') === 'HostLimitError';
+    }
+}
+
+export class EmailError extends AjaxError {
+    constructor(payload) {
+        super(payload, 'Please verify your email settings');
+    }
+}
+
+export function isEmailError(errorOrStatus, payload) {
+    if (isAjaxError(errorOrStatus)) {
+        return errorOrStatus instanceof EmailError;
+    } else {
+        return get(payload || {}, 'errors.firstObject.type') === 'EmailError';
+    }
+}
+
 /* end: custom error types */
 
 let ajaxService = AjaxService.extend({
@@ -164,6 +194,10 @@ let ajaxService = AjaxService.extend({
             return new MaintenanceError(payload);
         } else if (this.isThemeValidationError(status, headers, payload)) {
             return new ThemeValidationError(payload);
+        } else if (this.isHostLimitError(status, headers, payload)) {
+            return new HostLimitError(payload);
+        } else if (this.isEmailError(status, headers, payload)) {
+            return new EmailError(payload);
         }
 
         let isGhostRequest = GHOST_REQUEST.test(request.url);
@@ -222,6 +256,14 @@ let ajaxService = AjaxService.extend({
 
     isThemeValidationError(status, headers, payload) {
         return isThemeValidationError(status, payload);
+    },
+
+    isHostLimitError(status, headers, payload) {
+        return isHostLimitError(status, payload);
+    },
+
+    isEmailError(status, headers, payload) {
+        return isEmailError(status, payload);
     }
 });
 

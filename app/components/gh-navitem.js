@@ -1,5 +1,6 @@
 import Component from '@ember/component';
 import ValidationState from 'ghost-admin/mixins/validation-state';
+import boundOneWay from 'ghost-admin/utils/bound-one-way';
 import {computed} from '@ember/object';
 import {readOnly} from '@ember/object/computed';
 import {run} from '@ember/runloop';
@@ -15,6 +16,8 @@ export default Component.extend(ValidationState, {
     deleteItem() {},
     updateUrl() {},
     updateLabel() {},
+    label: boundOneWay('navItem.label'),
+    url: boundOneWay('navItem.url'),
 
     errors: readOnly('navItem.errors'),
 
@@ -23,8 +26,8 @@ export default Component.extend(ValidationState, {
     }),
 
     actions: {
-        addItem() {
-            this.addItem();
+        addItem(item) {
+            this.addItem(item);
         },
 
         deleteItem(item) {
@@ -36,6 +39,7 @@ export default Component.extend(ValidationState, {
         },
 
         updateLabel(value) {
+            this.set('label', value);
             return this.updateLabel(value, this.navItem);
         },
 
@@ -52,9 +56,7 @@ export default Component.extend(ValidationState, {
         // enter key
         if (event.keyCode === 13 && this.get('navItem.isNew')) {
             event.preventDefault();
-            run.scheduleOnce('actions', this, function () {
-                this.send('addItem');
-            });
+            run.scheduleOnce('actions', this, this.send, 'addItem', this.navItem);
         }
     }
 });

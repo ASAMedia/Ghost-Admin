@@ -9,6 +9,9 @@ import {isEmpty, typeOf} from '@ember/utils';
 import {run} from '@ember/runloop';
 import {inject as service} from '@ember/service';
 
+/* eslint-disable ghost/ember/no-side-effects */
+// bug in eslint-plugin-ember?
+
 export default Component.extend(ShortcutsMixin, {
 
     config: service(),
@@ -212,11 +215,8 @@ export default Component.extend(ShortcutsMixin, {
         if (!isEmpty(uploadedImageUrls) && uploadedImageUrls !== this._uploadedImageUrls) {
             this._uploadedImageUrls = uploadedImageUrls;
 
-            // must be done afterRender to avoid double modify of mobiledoc in
-            // a single render
-            run.scheduleOnce('afterRender', this, () => {
-                this._insertImages(uploadedImageUrls);
-            });
+            // must be done afterRender to avoid double modify of mobiledoc in a single render
+            run.scheduleOnce('afterRender', this, this._insertImages, uploadedImageUrls);
         }
 
         // focus the editor when the markdown value changes, this is necessary
@@ -613,7 +613,7 @@ export default Component.extend(ShortcutsMixin, {
 
         // trigger the dialog via gh-file-input, when a file is selected it will
         // trigger the onImageFilesSelected closure action
-        this.$('input[type="file"]').click();
+        this.element.querySelector('input[type="file"]').click();
     },
 
     // wrap SimpleMDE's built-in preview toggle so that we can trigger a closure

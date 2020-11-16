@@ -2,15 +2,19 @@ import Component from '@ember/component';
 import ShortcutsMixin from 'ghost-admin/mixins/shortcuts';
 import calculatePosition from 'ember-basic-dropdown/utils/calculate-position';
 import ctrlOrCmd from 'ghost-admin/utils/ctrl-or-cmd';
-import {and, equal, match} from '@ember/object/computed';
+import {and, equal, match, or} from '@ember/object/computed';
+import {computed} from '@ember/object';
 import {getOwner} from '@ember/application';
 import {htmlSafe} from '@ember/string';
 import {inject as service} from '@ember/service';
 
 export default Component.extend(ShortcutsMixin, {
+    billing: service(),
     config: service(),
+    customViews: service(),
     feature: service(),
     ghostPaths: service(),
+    navigation: service(),
     router: service(),
     session: service(),
     ui: service(),
@@ -22,7 +26,6 @@ export default Component.extend(ShortcutsMixin, {
     iconStyle: '',
 
     showSearchModal: false,
-
     shortcuts: null,
 
     isIntegrationRoute: match('router.currentRouteName', /^settings\.integration/),
@@ -32,9 +35,11 @@ export default Component.extend(ShortcutsMixin, {
     // be a bug in Ember that's preventing it from working immediately after login
     isOnSite: equal('router.currentRouteName', 'site'),
 
+    showTagsNavigation: or('session.user.isOwnerOrAdmin', 'session.user.isEditor'),
     showMenuExtension: and('config.clientExtensions.menu', 'session.user.isOwner'),
     showDropdownExtension: and('config.clientExtensions.dropdown', 'session.user.isOwner'),
     showScriptExtension: and('config.clientExtensions.script', 'session.user.isOwner'),
+    showBilling: computed.reads('config.billingUrl'),
 
     init() {
         this._super(...arguments);
@@ -74,6 +79,9 @@ export default Component.extend(ShortcutsMixin, {
         },
         toggleSearchModal() {
             this.toggleProperty('showSearchModal');
+        },
+        toggleBillingModal() {
+            this.billing.openBillingWindow(this.router.currentURL);
         }
     },
 

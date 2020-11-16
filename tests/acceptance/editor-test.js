@@ -1,4 +1,5 @@
 import Mirage from 'ember-cli-mirage';
+import ctrlOrCmd from 'ghost-admin/utils/ctrl-or-cmd';
 import moment from 'moment';
 import sinon from 'sinon';
 import {authenticateSession, invalidateSession} from 'ember-simple-auth/test-support';
@@ -213,7 +214,7 @@ describe('Acceptance: Editor', function () {
             expect(
                 find('[data-test-publishmenu-save]').textContent.trim(),
                 'publish menu save button updated after draft is published'
-            ).to.equal('Published');
+            ).to.equal('Update');
 
             expect(
                 find('[data-test-publishmenu-published]'),
@@ -258,7 +259,7 @@ describe('Acceptance: Editor', function () {
             expect(
                 find('[data-test-publishmenu-save]').textContent.trim(),
                 'publish menu save button updated after published post is updated'
-            ).to.equal('Updated');
+            ).to.equal('Update');
 
             // go to settings to change the timezone
             await visit('/settings/general');
@@ -266,17 +267,17 @@ describe('Acceptance: Editor', function () {
 
             expect(currentURL(), 'currentURL for settings')
                 .to.equal('/settings/general');
-            expect(find('#activeTimezone option:checked').textContent.trim(), 'default timezone')
+            expect(find('#timezone option:checked').textContent.trim(), 'default timezone')
                 .to.equal('(GMT) UTC');
 
             // select a new timezone
-            find('#activeTimezone option[value="Pacific/Kwajalein"]').selected = true;
+            find('#timezone option[value="Pacific/Kwajalein"]').selected = true;
 
-            await triggerEvent('#activeTimezone', 'change');
+            await triggerEvent('#timezone', 'change');
             // save the settings
             await click('.gh-btn.gh-btn-blue');
 
-            expect(find('#activeTimezone option:checked').textContent.trim(), 'new timezone after saving')
+            expect(find('#timezone option:checked').textContent.trim(), 'new timezone after saving')
                 .to.equal('(GMT +12:00) International Date Line West');
 
             // and now go back to the editor
@@ -309,7 +310,7 @@ describe('Acceptance: Editor', function () {
             expect(
                 find('[data-test-publishmenu-save]').textContent.trim(),
                 'publish menu save button updated after published post is unpublished'
-            ).to.equal('Unpublished');
+            ).to.equal('Publish');
 
             expect(
                 find('[data-test-publishmenu-draft]'),
@@ -339,7 +340,7 @@ describe('Acceptance: Editor', function () {
             expect(
                 find('[data-test-publishmenu-save]').textContent.trim(),
                 'publish menu save button updated after draft is scheduled'
-            ).to.equal('Scheduled');
+            ).to.equal('Reschedule');
 
             await click('[data-test-publishmenu-cancel]');
 
@@ -348,9 +349,9 @@ describe('Acceptance: Editor', function () {
                 'publish menu is not shown after closed'
             ).to.not.exist;
 
-            // expect countdown to show warning, that post will go live in x minutes
+            // expect countdown to show warning that post is scheduled to be published
             expect(find('[data-test-schedule-countdown]').textContent.trim(), 'notification countdown')
-                .to.contain('Post will go live in');
+                .to.match(/Will be published in (4|5) minutes/);
 
             expect(
                 find('[data-test-publishmenu-trigger]').textContent.trim(),
@@ -360,7 +361,7 @@ describe('Acceptance: Editor', function () {
             expect(
                 find('[data-test-editor-post-status]').textContent.trim(),
                 'scheduled post status'
-            ).to.equal('Scheduled');
+            ).to.match(/Will be published in (4|5) minutes/);
 
             // Re-schedule
             await click('[data-test-publishmenu-trigger]');
@@ -375,7 +376,7 @@ describe('Acceptance: Editor', function () {
             expect(
                 find('[data-test-publishmenu-save]').textContent.trim(),
                 'publish menu save button text for a rescheduled post'
-            ).to.equal('Rescheduled');
+            ).to.equal('Reschedule');
 
             await click('[data-test-publishmenu-cancel]');
 
@@ -387,7 +388,7 @@ describe('Acceptance: Editor', function () {
             expect(
                 find('[data-test-editor-post-status]').textContent.trim(),
                 'scheduled status text'
-            ).to.equal('Scheduled');
+            ).to.match(/Will be published in (4|5) minutes/);
 
             // unschedule
             await click('[data-test-publishmenu-trigger]');
@@ -403,7 +404,7 @@ describe('Acceptance: Editor', function () {
             expect(
                 find('[data-test-publishmenu-save]').textContent.trim(),
                 'publish menu save button updated after scheduled post is unscheduled'
-            ).to.equal('Unscheduled');
+            ).to.equal('Publish');
 
             await click('[data-test-publishmenu-cancel]');
 
@@ -526,7 +527,7 @@ describe('Acceptance: Editor', function () {
             let compareDateString = compareDate.format('YYYY-MM-DD');
             let compareTimeString = compareDate.format('HH:mm');
             this.server.create('post', {publishedAt: moment.utc().add(4, 'minutes'), status: 'scheduled', authors: [author]});
-            this.server.create('setting', {activeTimezone: 'Europe/Dublin'});
+            this.server.create('setting', {timezone: 'Europe/Dublin'});
             clock.restore();
 
             await visit('/editor/post/1');
@@ -540,9 +541,9 @@ describe('Acceptance: Editor', function () {
             // Dropdown menu should be 'Update Post' and 'Unschedule'
             expect(find('[data-test-publishmenu-trigger]').textContent.trim(), 'text in save button for scheduled post')
                 .to.equal('Scheduled');
-            // expect countdown to show warning, that post will go live in x minutes
+            // expect countdown to show warning, that post is scheduled to be published
             expect(find('[data-test-schedule-countdown]').textContent.trim(), 'notification countdown')
-                .to.contain('Post will go live in');
+                .to.match(/Will be published in (4|5) minutes/);
         });
 
         it('shows author token input and allows changing of authors in PSM', async function () {
@@ -828,6 +829,28 @@ describe('Acceptance: Editor', function () {
                 findAll('[data-test-field="og-title"]').length,
                 'facebook title not present after closing subview'
             ).to.equal(0);
+        });
+
+        // https://github.com/TryGhost/Ghost/issues/11786
+        it('save shortcut works when tags/authors field is focused', async function () {
+            let post = this.server.create('post', {authors: [author]});
+
+            await visit(`/editor/post/${post.id}`);
+            await fillIn('[data-test-editor-title-input]', 'CMD-S Test');
+
+            await click('[data-test-psm-trigger]');
+            await click('[data-test-token-input]');
+
+            await triggerEvent('[data-test-token-input]', 'keydown', {
+                keyCode: 83, // s
+                metaKey: ctrlOrCmd === 'command',
+                ctrlKey: ctrlOrCmd === 'ctrl'
+            });
+
+            // Check if save request has been sent correctly.
+            let [lastRequest] = this.server.pretender.handledRequests.slice(-1);
+            let body = JSON.parse(lastRequest.requestBody);
+            expect(body.posts[0].title).to.equal('CMD-S Test');
         });
     });
 });

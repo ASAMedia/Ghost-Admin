@@ -9,7 +9,7 @@ export default Controller.extend({
 
     actions: {
         save() {
-            this.save.perform();
+            this.saveTask.perform();
         },
 
         toggleLeaveSettingsModal(transition) {
@@ -25,8 +25,8 @@ export default Controller.extend({
                 this.set('leaveSettingsTransition', transition);
 
                 // if a save is running, wait for it to finish then transition
-                if (this.get('save.isRunning')) {
-                    return this.get('save.last').then(() => {
+                if (this.save.isRunning) {
+                    return this.save.last.then(() => {
                         transition.retry();
                     });
                 }
@@ -53,7 +53,7 @@ export default Controller.extend({
 
     },
 
-    save: task(function* () {
+    saveTask: task(function* () {
         let notifications = this.notifications;
 
         try {

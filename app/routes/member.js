@@ -1,67 +1,75 @@
 import AuthenticatedRoute from 'ghost-admin/routes/authenticated';
-import CurrentUserSettings from 'ghost-admin/mixins/current-user-settings';
+import classic from 'ember-classic-decorator';
+import {action} from '@ember/object';
 import {inject as service} from '@ember/service';
 
-export default AuthenticatedRoute.extend(CurrentUserSettings, {
+@classic
+export default class MembersRoute extends AuthenticatedRoute {
+    @service router;
 
-    router: service(),
+    _requiresBackgroundRefresh = true;
 
     init() {
-        this._super(...arguments);
+        super.init(...arguments);
         this.router.on('routeWillChange', (transition) => {
             this.showUnsavedChangesModal(transition);
         });
-    },
+    }
 
     beforeModel() {
-        this._super(...arguments);
-        return this.get('session.user')
-            .then(this.transitionAuthor());
-    },
+        super.beforeModel(...arguments);
+        return this.session.user.then((user) => {
+            if (!user.isOwnerOrAdmin) {
+                return this.transitionTo('home');
+            }
+        });
+    }
 
     model(params) {
-        this._isMemberUpdated = true;
-        return this.store.findRecord('member', params.member_id, {
-            reload: true
-        });
-    },
+        this._requiresBackgroundRefresh = false;
 
-    setupController(controller, model) {
-        this._super(...arguments);
-        if (!this._isMemberUpdated) {
-            controller.fetchMember.perform(model.get('id'));
+        if (params.member_id) {
+            return this.store.findRecord('member', params.member_id, {reload: true});
+        } else {
+            return this.store.createRecord('member');
         }
-    },
+    }
+
+    setupController(controller, member) {
+        super.setupController(...arguments);
+        if (this._requiresBackgroundRefresh) {
+            controller.fetchMemberTask.perform(member.get('id'));
+        }
+    }
 
     deactivate() {
-        this._super(...arguments);
+        super.deactivate(...arguments);
+        // clean up newly created records and revert unsaved changes to existing
+        this.controller.member.rollbackAttributes();
+        this._requiresBackgroundRefresh = true;
+    }
 
-        // clear the properties
-        let {controller} = this;
-        controller.model.rollbackAttributes();
-        this.set('controller.model', null);
-        this._isMemberUpdated = false;
-    },
-
-    actions: {
-        save() {
-            this.controller.send('save');
-        }
-    },
+    @action
+    save() {
+        this.controller.save();
+    }
 
     titleToken() {
-        return this.controller.get('member.name');
-    },
+        return this.controller.member.name;
+    }
 
     showUnsavedChangesModal(transition) {
-        if (transition.from && transition.from.name.match(/^member$/) && transition.targetName) {
+        if (transition.from && transition.from.name === this.routeName && transition.targetName) {
             let {controller} = this;
 
-            if (!controller.member.isDeleted && controller.member.hasDirtyAttributes) {
+            // member.changedAttributes is always true for new members but number of changed attrs is reliable
+            let isChanged = Object.keys(controller.member.changedAttributes()).length > 0;
+
+            if (!controller.member.isDeleted && isChanged) {
                 transition.abort();
-                controller.send('toggleUnsavedChangesModal', transition);
+                controller.toggleUnsavedChangesModal(transition);
                 return;
             }
         }
     }
-});
+}

@@ -1,40 +1,50 @@
 import ModalComponent from 'ghost-admin/components/modal-base';
 import {alias} from '@ember/object/computed';
+import {computed} from '@ember/object';
+import {reads} from '@ember/object/computed';
 import {inject as service} from '@ember/service';
 import {task} from 'ember-concurrency';
 
 export default ModalComponent.extend({
-    notifications: service(),
+    membersStats: service(),
 
-    member: alias('model.member'),
-    onSuccess: alias('model.onSuccess'),
+    shouldCancelSubscriptions: false,
+
+    // Allowed actions
+    confirm: () => {},
+
+    member: alias('model'),
+
+    cancelSubscriptions: reads('shouldCancelSubscriptions'),
+
+    hasActiveStripeSubscriptions: computed('member', function () {
+        let subscriptions = this.member.get('stripe');
+
+        if (!subscriptions || subscriptions.length === 0) {
+            return false;
+        }
+
+        let firstActiveStripeSubscription = subscriptions.find((subscription) => {
+            return ['active', 'trialing', 'unpaid', 'past_due'].includes(subscription.status);
+        });
+
+        return firstActiveStripeSubscription !== undefined;
+    }),
 
     actions: {
         confirm() {
             this.deleteMember.perform();
+        },
+
+        toggleShouldCancelSubscriptions() {
+            this.set('shouldCancelSubscriptions', !this.shouldCancelSubscriptions);
         }
-    },
-
-    _success() {
-        // clear any previous error messages
-        this.notifications.closeAlerts('post.delete');
-
-        // trigger the success action
-        if (this.onSuccess) {
-            this.onSuccess();
-        }
-    },
-
-    _failure(error) {
-        this.notifications.showAPIError(error, {key: 'post.delete.failed'});
     },
 
     deleteMember: task(function* () {
         try {
-            yield this.member.destroyRecord();
-            this._success();
-        } catch (e) {
-            this._failure(e);
+            yield this.confirm(this.shouldCancelSubscriptions);
+            this.membersStats.invalidate();
         } finally {
             this.send('closeModal');
         }

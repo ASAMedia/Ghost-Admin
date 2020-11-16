@@ -27,7 +27,7 @@ export default Service.extend(_ProxyMixin, ValidationEngine, {
     _loadSettings() {
         if (!this._loadingPromise) {
             this._loadingPromise = this.store
-                .queryRecord('setting', {type: 'blog,theme,private,members'})
+                .queryRecord('setting', {group: 'site,theme,private,members,portal,newsletter,email,amp,labs,slack,unsplash,views'})
                 .then((settings) => {
                     this._loadingPromise = null;
                     return settings;
@@ -53,23 +53,22 @@ export default Service.extend(_ProxyMixin, ValidationEngine, {
         });
     },
 
-    save() {
+    async save() {
         let settings = this.content;
 
         if (!settings) {
             return false;
         }
 
-        return settings.save().then((settings) => {
-            this.set('settledIcon', get(settings, 'icon'));
-            return settings;
-        });
+        await settings.save();
+        this.set('settledIcon', settings.icon);
+        return settings;
     },
 
     rollbackAttributes() {
         return this.content.rollbackAttributes();
     },
-    
+
     changedAttributes() {
         return this.content.changedAttributes();
     }

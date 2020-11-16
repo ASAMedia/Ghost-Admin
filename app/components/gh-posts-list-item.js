@@ -1,44 +1,34 @@
-import Component from '@ember/component';
-import {alias, equal} from '@ember/object/computed';
-import {computed} from '@ember/object';
-import {isBlank} from '@ember/utils';
+import Component from '@glimmer/component';
+import {formatPostTime} from 'ghost-admin/helpers/gh-format-post-time';
 import {inject as service} from '@ember/service';
 
-export default Component.extend({
-    ghostPaths: service(),
+export default class GhPostsListItemComponent extends Component {
+    @service session;
+    @service settings;
 
-    tagName: 'li',
-    classNames: ['gh-list-row', 'gh-posts-list-item'],
+    get authorNames() {
+        return this.args.post.authors.map(author => author.name || author.email).join(', ');
+    }
 
-    post: null,
+    get sendEmailWhenPublished() {
+        let {post} = this.args;
+        return post.emailRecipientFilter && post.emailRecipientFilter !== 'none';
+    }
 
-    isFeatured: alias('post.featured'),
-    isPage: alias('post.page'),
-    isDraft: equal('post.status', 'draft'),
-    isPublished: equal('post.status', 'published'),
-    isScheduled: equal('post.status', 'scheduled'),
+    get scheduledText() {
+        let {post} = this.args;
+        let text = [];
 
-    authorNames: computed('post.authors.[]', function () {
-        let authors = this.get('post.authors');
-
-        return authors.map(author => author.get('name') || author.get('email')).join(', ');
-    }),
-
-    subText: computed('post.{excerpt,customExcerpt,metaDescription}', function () {
-        let text = this.get('post.excerpt') || '';
-        let customExcerpt = this.get('post.customExcerpt');
-        let metaDescription = this.get('post.metaDescription');
-
-        if (!isBlank(customExcerpt)) {
-            text = customExcerpt;
-        } else if (!isBlank(metaDescription)) {
-            text = metaDescription;
+        if (post.emailRecipientFilter && post.emailRecipientFilter !== 'none') {
+            text.push(`and sent to ${post.emailRecipientFilter} members`);
         }
 
-        if (this.isScheduled) {
-            return `${text.slice(0, 40)}...`;
-        } else {
-            return `${text.slice(0, 80)}...`;
-        }
-    })
-});
+        let formattedTime = formatPostTime(
+            post.publishedAtUTC,
+            {timezone: this.settings.get('timezone'), scheduled: true}
+        );
+        text.push(formattedTime);
+
+        return text.join(' ');
+    }
+}

@@ -1,6 +1,5 @@
 /* eslint-disable ghost/ember/alias-model-in-controller */
 import Controller from '@ember/controller';
-import {alias} from '@ember/object/computed';
 import {inject as service} from '@ember/service';
 import {task} from 'ember-concurrency';
 
@@ -10,11 +9,9 @@ export default Controller.extend({
 
     leaveSettingsTransition: null,
 
-    ampSettings: alias('settings.amp'),
-
     actions: {
         update(value) {
-            this.set('ampSettings', value);
+            this.settings.set('amp', value);
         },
 
         save() {
@@ -34,8 +31,8 @@ export default Controller.extend({
                 this.set('leaveSettingsTransition', transition);
 
                 // if a save is running, wait for it to finish then transition
-                if (this.get('save.isRunning')) {
-                    return this.get('save.last').then(() => {
+                if (this.save.isRunning) {
+                    return this.save.last.then(() => {
                         transition.retry();
                     });
                 }
@@ -62,13 +59,9 @@ export default Controller.extend({
     },
 
     save: task(function* () {
-        let amp = this.ampSettings;
-        let settings = this.settings;
-
-        settings.set('amp', amp);
-
         try {
-            return yield settings.save();
+            yield this.settings.validate();
+            return yield this.settings.save();
         } catch (error) {
             this.notifications.showAPIError(error);
             throw error;

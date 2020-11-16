@@ -8,7 +8,6 @@ import {
     IMAGE_MIME_TYPES
 } from 'ghost-admin/components/gh-image-uploader';
 import {computed} from '@ember/object';
-import {run} from '@ember/runloop';
 import {inject as service} from '@ember/service';
 import {task} from 'ember-concurrency';
 
@@ -34,7 +33,6 @@ export default Controller.extend({
     iconMimeTypes: 'image/png,image/x-icon',
     imageExtensions: IMAGE_EXTENSIONS,
     imageMimeTypes: IMAGE_MIME_TYPES,
-
     _scratchFacebook: null,
     _scratchTwitter: null,
 
@@ -56,7 +54,7 @@ export default Controller.extend({
         },
 
         setTimezone(timezone) {
-            this.set('settings.activeTimezone', timezone.name);
+            this.set('settings.timezone', timezone.name);
         },
 
         removeImage(image) {
@@ -122,8 +120,8 @@ export default Controller.extend({
                 this.set('leaveSettingsTransition', transition);
 
                 // if a save is running, wait for it to finish then transition
-                if (this.get('save.isRunning')) {
-                    return this.get('save.last').then(() => {
+                if (this.save.isRunning) {
+                    return this.save.last.then(() => {
                         transition.retry();
                     });
                 }
@@ -186,10 +184,8 @@ export default Controller.extend({
                     throw 'invalid url';
                 }
 
-                this.set('settings.facebook', '');
-                run.schedule('afterRender', this, function () {
-                    this.set('settings.facebook', newUrl);
-                });
+                this.settings.set('facebook', newUrl);
+                this.settings.notifyPropertyChange('facebook');
             } catch (e) {
                 if (e === 'invalid url') {
                     errMessage = 'The URL must be in a format like '
@@ -244,12 +240,9 @@ export default Controller.extend({
 
                 newUrl = `https://twitter.com/${username}`;
 
-                this.get('settings.hasValidated').pushObject('twitter');
-
-                this.set('settings.twitter', '');
-                run.schedule('afterRender', this, function () {
-                    this.set('settings.twitter', newUrl);
-                });
+                this.settings.get('hasValidated').pushObject('twitter');
+                this.settings.set('twitter', newUrl);
+                this.settings.notifyPropertyChange('twitter');
             } else {
                 errMessage = 'The URL must be in a format like '
                            + 'https://twitter.com/yourUsername';
@@ -275,6 +268,14 @@ export default Controller.extend({
     save: task(function* () {
         let notifications = this.notifications;
         let config = this.config;
+
+        if (this.settings.get('twitter') !== this._scratchTwitter) {
+            this.send('validateTwitterUrl');
+        }
+
+        if (this.settings.get('facebook') !== this._scratchFacebook) {
+            this.send('validateFacebookUrl');
+        }
 
         try {
             let settings = yield this.settings.save();

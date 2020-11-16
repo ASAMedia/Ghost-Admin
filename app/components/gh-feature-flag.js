@@ -20,9 +20,6 @@ const FeatureFlagComponent = Component.extend({
             return this._flagValue;
         },
         set(key, value) {
-            if (this.flag === 'members' && value === true) {
-                this.set(`feature.subscribers`, false);
-            }
             return this.set(`feature.${this.flag}`, value);
         }
     }),
@@ -42,10 +39,6 @@ const FeatureFlagComponent = Component.extend({
             return this.get(`feature.${this.flag}`);
         });
     }
-});
-
-FeatureFlagComponent.reopenClass({
-    positionalParams: ['flag', '_disabled']
 });
 
 export default FeatureFlagComponent;

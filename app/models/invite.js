@@ -1,6 +1,4 @@
-import Model from 'ember-data/model';
-import attr from 'ember-data/attr';
-import {belongsTo} from 'ember-data/relationships';
+import Model, {attr, belongsTo} from '@ember-data/model';
 import {inject as service} from '@ember/service';
 
 export default Model.extend({
@@ -19,11 +17,9 @@ export default Model.extend({
     ghostPaths: service(),
 
     resend() {
-        let fullInviteData = this.toJSON();
-
         let inviteData = {
-            email: fullInviteData.email,
-            role_id: fullInviteData.role
+            email: this.email,
+            role_id: this.role.id
         };
 
         let inviteUrl = this.get('ghostPaths.url').api('invites');

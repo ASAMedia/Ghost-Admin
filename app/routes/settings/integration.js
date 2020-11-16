@@ -9,6 +9,10 @@ export default AuthenticatedRoute.extend(CurrentUserSettings, {
         this._super(...arguments);
         this.router.on('routeWillChange', (transition) => {
             this.showUnsavedChangesModal(transition);
+            if (this.controller) {
+                this.controller.set('selectedApiKey', null);
+                this.controller.set('isApiKeyRegenerated', false);
+            }
         });
     },
 
@@ -26,6 +30,12 @@ export default AuthenticatedRoute.extend(CurrentUserSettings, {
         return this
             .controllerFor('settings.integrations')
             .integrationModelHook('id', params.integration_id, this, transition);
+    },
+
+    deactivate() {
+        this._super(...arguments);
+        this.controller.set('leaveScreenTransition', null);
+        this.controller.set('showUnsavedChangesModal', false);
     },
 
     actions: {

@@ -1,9 +1,9 @@
 import NavigationItem from 'ghost-admin/models/navigation-item';
-import Transform from 'ember-data/transform';
+import Transform from '@ember-data/serializer/transform';
 import {A as emberA, isArray as isEmberArray} from '@ember/array';
 
 export default Transform.extend({
-    deserialize(serialized) {
+    deserialize(serialized, options) {
         let navItems, settingsArray;
 
         try {
@@ -12,7 +12,10 @@ export default Transform.extend({
             settingsArray = [];
         }
 
-        navItems = settingsArray.map(itemDetails => NavigationItem.create(itemDetails));
+        navItems = settingsArray.map((itemDetails) => {
+            itemDetails.isSecondary = options && options.isSecondary || false;
+            return NavigationItem.create(itemDetails);
+        });
 
         return emberA(navItems);
     },

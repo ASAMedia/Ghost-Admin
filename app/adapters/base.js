@@ -1,6 +1,6 @@
 import AjaxServiceSupport from 'ember-ajax/mixins/ajax-support';
 import DataAdapterMixin from 'ember-simple-auth/mixins/data-adapter-mixin';
-import RESTAdapter from 'ember-data/adapters/rest';
+import RESTAdapter from '@ember-data/adapter/rest';
 import ghostPaths from 'ghost-admin/utils/ghost-paths';
 import {inject as service} from '@ember/service';
 
@@ -12,10 +12,6 @@ export default RESTAdapter.extend(DataAdapterMixin, AjaxServiceSupport, {
 
     shouldBackgroundReloadRecord() {
         return false;
-    },
-
-    authorize(/*xhr*/) {
-        // noop - we're using server-side session cookies
     },
 
     query(store, type, query) {
@@ -32,11 +28,12 @@ export default RESTAdapter.extend(DataAdapterMixin, AjaxServiceSupport, {
     buildURL() {
         // Ensure trailing slashes
         let url = this._super(...arguments);
+        let parsedUrl = new URL(url);
 
-        if (url.slice(-1) !== '/') {
-            url += '/';
+        if (!parsedUrl.pathname.endsWith('/')) {
+            parsedUrl.pathname += '/';
         }
 
-        return url;
+        return parsedUrl.toString();
     }
 });

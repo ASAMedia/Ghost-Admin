@@ -1,105 +1,172 @@
-import Controller from '@ember/controller';
+import Controller, {inject as controller} from '@ember/controller';
+import EmberObject, {action, defineProperty} from '@ember/object';
+import boundOneWay from 'ghost-admin/utils/bound-one-way';
 import moment from 'moment';
-import {alias} from '@ember/object/computed';
-import {computed} from '@ember/object';
-import {inject as controller} from '@ember/controller';
 import {inject as service} from '@ember/service';
-import {task} from 'ember-concurrency';
+import {task} from 'ember-concurrency-decorators';
+import {tracked} from '@glimmer/tracking';
 
-export default Controller.extend({
-    members: controller(),
-    store: service(),
+const SCRATCH_PROPS = ['name', 'email', 'note'];
 
-    router: service(),
+export default class MemberController extends Controller {
+    @controller members;
+    @service session;
+    @service dropdown;
+    @service membersStats;
+    @service notifications;
+    @service router;
+    @service store;
 
-    notifications: service(),
+    @tracked isLoading = false;
+    @tracked showDeleteMemberModal = false;
+    @tracked showImpersonateMemberModal = false;
+    @tracked showUnsavedChangesModal = false;
 
-    member: alias('model'),
-    subscribedAt: computed('member.createdAt', function () {
-        let memberSince = moment(this.member.createdAt).from(moment());
-        let createdDate = moment(this.member.createdAt).format('MMM DD, YYYY');
+    leaveScreenTransition = null;
+
+    // Computed properties -----------------------------------------------------
+
+    get member() {
+        return this.model;
+    }
+
+    set member(member) {
+        this.model = member;
+    }
+
+    get scratchMember() {
+        let scratchMember = EmberObject.create({member: this.member});
+        SCRATCH_PROPS.forEach(prop => defineProperty(scratchMember, prop, boundOneWay(`member.${prop}`)));
+        return scratchMember;
+    }
+
+    get subscribedAt() {
+        // member can be a proxy object in a sparse array so .get is required
+        let memberSince = moment(this.member.get('createdAtUTC')).from(moment());
+        let createdDate = moment(this.member.get('createdAtUTC')).format('D MMM YYYY');
         return `${createdDate} (${memberSince})`;
-    }),
+    }
 
-    actions: {
-        setProperty(propKey, value) {
-            this._saveMemberProperty(propKey, value);
-        },
-        toggleDeleteMemberModal() {
-            this.toggleProperty('showDeleteMemberModal');
-        },
-        finaliseDeletion() {
-            // decrememnt the total member count manually so there's no flash
-            // when transitioning back to the members list
-            if (this.members.meta) {
-                this.members.decrementProperty('meta.pagination.total');
+    // Actions -----------------------------------------------------------------
+
+    @action
+    setProperty(propKey, value) {
+        this._saveMemberProperty(propKey, value);
+    }
+
+    @action
+    toggleDeleteMemberModal() {
+        this.showDeleteMemberModal = !this.showDeleteMemberModal;
+    }
+
+    @action
+    toggleImpersonateMemberModal() {
+        this.showImpersonateMemberModal = !this.showImpersonateMemberModal;
+    }
+
+    @action
+    save() {
+        return this.saveTask.perform();
+    }
+
+    @action
+    deleteMember(cancelSubscriptions = false) {
+        let options = {
+            adapterOptions: {
+                cancel: cancelSubscriptions
             }
-            this.router.transitionTo('members');
-        },
+        };
+        return this.member.destroyRecord(options).then(() => {
+            this.members.refreshData();
+            return this.transitionToRoute('members');
+        }, (error) => {
+            return this.notifications.showAPIError(error, {key: 'member.delete'});
+        });
+    }
 
-        toggleUnsavedChangesModal(transition) {
-            let leaveTransition = this.leaveScreenTransition;
-    
-            if (!transition && this.showUnsavedChangesModal) {
-                this.set('leaveScreenTransition', null);
-                this.set('showUnsavedChangesModal', false);
-                return;
-            }
-    
-            if (!leaveTransition || transition.targetName === leaveTransition.targetName) {
-                this.set('leaveScreenTransition', transition);
-    
-                // if a save is running, wait for it to finish then transition
-                if (this.save.isRunning) {
-                    return this.save.last.then(() => {
-                        transition.retry();
-                    });
-                }
-    
-                // we genuinely have unsaved data, show the modal
-                this.set('showUnsavedChangesModal', true);
-            }
-        },
+    @action
+    toggleUnsavedChangesModal(transition) {
+        let leaveTransition = this.leaveScreenTransition;
 
-        leaveScreen() {
-            let transition = this.leaveScreenTransition;
-
-            if (!transition) {
-                this.notifications.showAlert('Sorry, there was an error in the application. Please let the Ghost team know what happened.', {type: 'error'});
-                return;
-            }
-
-            // roll back changes on model props
-            this.member.rollbackAttributes();
-
-            return transition.retry();
+        if (!transition && this.showUnsavedChangesModal) {
+            this.leaveScreenTransition = null;
+            this.showUnsavedChangesModal = false;
+            return;
         }
-    },
 
-    save: task(function* () {
-        let member = this.member;
+        if (!leaveTransition || transition.targetName === leaveTransition.targetName) {
+            this.leaveScreenTransition = transition;
+
+            // if a save is running, wait for it to finish then transition
+            if (this.save.isRunning) {
+                return this.save.last.then(() => {
+                    transition.retry();
+                });
+            }
+
+            // we genuinely have unsaved data, show the modal
+            this.showUnsavedChangesModal = true;
+        }
+    }
+
+    @action
+    leaveScreen() {
+        this.member.rollbackAttributes();
+        return this.leaveScreenTransition.retry();
+    }
+
+    // Tasks -------------------------------------------------------------------
+
+    @task({drop: true})
+    *saveTask() {
+        let {member, scratchMember} = this;
+
+        // if Cmd+S is pressed before the field loses focus make sure we're
+        // saving the intended property values
+        let scratchProps = scratchMember.getProperties(SCRATCH_PROPS);
+        member.setProperties(scratchProps);
+
         try {
-            return yield member.save();
+            yield member.save();
+            member.updateLabels();
+            this.members.refreshData();
+
+            // replace 'member.new' route with 'member' route
+            this.replaceRoute('member', member);
+
+            return member;
         } catch (error) {
             if (error) {
                 this.notifications.showAPIError(error, {key: 'member.save'});
             }
         }
-    }).drop(),
+    }
+
+    @task
+    *fetchMemberTask(memberId) {
+        this.isLoading = true;
+
+        this.member = yield this.store.findRecord('member', memberId, {
+            reload: true
+        });
+
+        this.isLoading = false;
+    }
+
+    // Private -----------------------------------------------------------------
 
     _saveMemberProperty(propKey, newValue) {
-        let member = this.member;
-        member.set(propKey, newValue);
-    },
+        let currentValue = this.member.get(propKey);
 
-    fetchMember: task(function* (memberId) {
-        this.set('isLoading', true);
-        yield this.store.findRecord('member', memberId, {
-            reload: true
-        }).then((data) => {
-            this.set('member', data);
-            this.set('isLoading', false);
-        });
-    })
+        if (newValue) {
+            newValue = newValue.trim();
+        }
 
-});
+        // avoid modifying empty values and triggering inadvertant unsaved changes modals
+        if (newValue !== false && !newValue && !currentValue) {
+            return;
+        }
+
+        this.member.set(propKey, newValue);
+    }
+}

@@ -10,7 +10,8 @@ import {task, timeout} from 'ember-concurrency';
 export default Controller.extend({
     ghostPaths: service(),
 
-    isTesting: undefined,
+    selectedApiKey: null,
+    isApiKeyRegenerated: false,
 
     init() {
         this._super(...arguments);
@@ -29,13 +30,36 @@ export default Controller.extend({
         return url.replace(/\/$/, '');
     }),
 
+    regeneratedKeyType: computed('isApiKeyRegenerated', 'selectedApiKey', function () {
+        if (this.isApiKeyRegenerated) {
+            return this.get('selectedApiKey.type');
+        }
+        return null;
+    }),
+
+    actions: {
+        confirmRegenerateKeyModal(apiKey) {
+            this.set('showRegenerateKeyModal', true);
+            this.set('isApiKeyRegenerated', false);
+            this.set('selectedApiKey', apiKey);
+        },
+
+        cancelRegenerateKeyModal() {
+            this.set('showRegenerateKeyModal', false);
+        },
+
+        regenerateKey() {
+            this.set('isApiKeyRegenerated', true);
+        }
+    },
+
     copyAdminKey: task(function* () {
         copyTextToClipboard(this.integration.adminKey.secret);
-        yield timeout(3000);
+        yield timeout(this.isTesting ? 50 : 3000);
     }),
 
     copyApiUrl: task(function* () {
         copyTextToClipboard(this.apiUrl);
-        yield timeout(3000);
+        yield timeout(this.isTesting ? 50 : 3000);
     })
 });

@@ -19,12 +19,14 @@ export default Controller.extend({
 
     dirtyAttributes: false,
     newNavItem: null,
+    newSecondaryNavItem: null,
     themes: null,
     themeToDelete: null,
 
     init() {
         this._super(...arguments);
         this.set('newNavItem', NavigationItem.create({isNew: true}));
+        this.set('newSecondaryNavItem', NavigationItem.create({isNew: true, isSecondary: true}));
     },
 
     showDeleteThemeModal: notEmpty('themeToDelete'),
@@ -40,16 +42,14 @@ export default Controller.extend({
             this.save.perform();
         },
 
-        addNavItem() {
-            let newNavItem = this.newNavItem;
-
+        addNavItem(item) {
             // If the url sent through is blank (user never edited the url)
-            if (newNavItem.get('url') === '') {
-                newNavItem.set('url', '/');
+            if (item.get('url') === '') {
+                item.set('url', '/');
             }
 
-            return newNavItem.validate().then(() => {
-                this.addNewNavItem();
+            return item.validate().then(() => {
+                this.addNewNavItem(item);
             });
         },
 
@@ -58,7 +58,7 @@ export default Controller.extend({
                 return;
             }
 
-            let navItems = this.get('settings.navigation');
+            let navItems = item.isSecondary ? this.get('settings.secondaryNavigation') : this.get('settings.navigation');
 
             navItems.removeObject(item);
             this.set('dirtyAttributes', true);
@@ -69,8 +69,10 @@ export default Controller.extend({
                 return;
             }
 
-            navItem.set('label', label);
-            this.set('dirtyAttributes', true);
+            if (navItem.get('label') !== label) {
+                navItem.set('label', label);
+                this.set('dirtyAttributes', true);
+            }
         },
 
         updateUrl(url, navItem) {
@@ -78,8 +80,10 @@ export default Controller.extend({
                 return;
             }
 
-            navItem.set('url', url);
-            this.set('dirtyAttributes', true);
+            if (navItem.get('url') !== url) {
+                navItem.set('url', url);
+                this.set('dirtyAttributes', true);
+            }
 
             return url;
         },
@@ -97,8 +101,8 @@ export default Controller.extend({
                 this.set('leaveSettingsTransition', transition);
 
                 // if a save is running, wait for it to finish then transition
-                if (this.get('save.isRunning')) {
-                    return this.get('save.last').then(() => {
+                if (this.save.isRunning) {
+                    return this.save.last.then(() => {
                         transition.retry();
                     });
                 }
@@ -125,14 +129,14 @@ export default Controller.extend({
         },
 
         activateTheme(theme) {
-            return theme.activate().then((theme) => {
-                if (!isEmpty(theme.get('warnings'))) {
-                    this.set('themeWarnings', theme.get('warnings'));
+            return theme.activate().then((activatedTheme) => {
+                if (!isEmpty(activatedTheme.get('warnings'))) {
+                    this.set('themeWarnings', activatedTheme.get('warnings'));
                     this.set('showThemeWarningsModal', true);
                 }
 
-                if (!isEmpty(theme.get('errors'))) {
-                    this.set('themeErrors', theme.get('errors'));
+                if (!isEmpty(activatedTheme.get('errors'))) {
+                    this.set('themeErrors', activatedTheme.get('errors'));
                     this.set('showThemeWarningsModal', true);
                 }
             }).catch((error) => {
@@ -196,20 +200,30 @@ export default Controller.extend({
 
         reset() {
             this.set('newNavItem', NavigationItem.create({isNew: true}));
+            this.set('newSecondaryNavItem', NavigationItem.create({isNew: true, isSecondary: true}));
         }
     },
 
     save: task(function* () {
         let navItems = this.get('settings.navigation');
-        let newNavItem = this.newNavItem;
+        let secondaryNavItems = this.get('settings.secondaryNavigation');
+
         let notifications = this.notifications;
         let validationPromises = [];
 
-        if (!newNavItem.get('isBlank')) {
-            validationPromises.pushObject(this.send('addNavItem'));
+        if (!this.newNavItem.get('isBlank')) {
+            validationPromises.pushObject(this.send('addNavItem', this.newNavItem));
+        }
+
+        if (!this.newSecondaryNavItem.get('isBlank')) {
+            validationPromises.pushObject(this.send('addNavItem', this.newSecondaryNavItem));
         }
 
         navItems.map((item) => {
+            validationPromises.pushObject(item.validate());
+        });
+
+        secondaryNavItems.map((item) => {
             validationPromises.pushObject(item.validate());
         });
 
@@ -225,15 +239,20 @@ export default Controller.extend({
         }
     }),
 
-    addNewNavItem() {
-        let navItems = this.get('settings.navigation');
-        let newNavItem = this.newNavItem;
+    addNewNavItem(item) {
+        let navItems = item.isSecondary ? this.get('settings.secondaryNavigation') : this.get('settings.navigation');
 
-        newNavItem.set('isNew', false);
-        navItems.pushObject(newNavItem);
+        item.set('isNew', false);
+        navItems.pushObject(item);
         this.set('dirtyAttributes', true);
-        this.set('newNavItem', NavigationItem.create({isNew: true}));
-        $('.gh-blognav-line:last input:first').focus();
+
+        if (item.isSecondary) {
+            this.set('newSecondaryNavItem', NavigationItem.create({isNew: true, isSecondary: true}));
+            $('.gh-blognav-container:last .gh-blognav-line:last input:first').focus();
+        } else {
+            this.set('newNavItem', NavigationItem.create({isNew: true}));
+            $('.gh-blognav-container:first .gh-blognav-line:last input:first').focus();
+        }
     },
 
     _deleteTheme() {

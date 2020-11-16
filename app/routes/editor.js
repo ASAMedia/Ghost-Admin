@@ -8,6 +8,7 @@ import {inject as service} from '@ember/service';
 
 let generalShortcuts = {};
 generalShortcuts[`${ctrlOrCmd}+shift+p`] = 'publish';
+generalShortcuts[`${ctrlOrCmd}+p`] = 'preview';
 
 export default AuthenticatedRoute.extend(ShortcutsRoute, {
     feature: service(),
@@ -29,15 +30,7 @@ export default AuthenticatedRoute.extend(ShortcutsRoute, {
         // edge has known issues
         if (this.userAgent.browser.isEdge && this.userAgent.parser.getEngine().name === 'EdgeHTML') {
             this.notifications.showAlert(
-                htmlSafe('Microsoft Edge is not currently supported. Please switch to <a href="https://ghost.org/downloads/" target="_blank" rel="noopener">Ghost Desktop</a> or a recent version of Chrome/Firefox/Safari.'),
-                {type: 'info', key: 'koenig.browserSupport'}
-            );
-        }
-
-        // mobile browsers are not currently supported
-        if (this.userAgent.device.isMobile || this.userAgent.device.isTablet) {
-            this.notifications.showAlert(
-                htmlSafe('Mobile editing is not currently supported. Please use a desktop browser or <a href="https://ghost.org/downloads/" target="_blank" rel="noopener">Ghost Desktop</a>.'),
+                htmlSafe('Microsoft Edge is not currently supported. Please use a recent version of Chrome/Firefox/Safari.'),
                 {type: 'info', key: 'koenig.browserSupport'}
             );
         }
@@ -62,12 +55,16 @@ export default AuthenticatedRoute.extend(ShortcutsRoute, {
             });
         },
 
+        preview() {
+            window.open(this.controller.post.previewUrl, '_blank', 'noopener');
+        },
+
         authorizationFailed() {
             this.controller.send('toggleReAuthenticateModal');
         },
 
-        redirectToContentScreen() {
-            this.transitionTo('posts');
+        redirectToContentScreen(displayName) {
+            this.transitionTo(displayName === 'page' ? 'pages' : 'posts');
         },
 
         willTransition(transition) {

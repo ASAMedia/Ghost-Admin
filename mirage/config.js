@@ -1,8 +1,10 @@
 import mockApiKeys from './config/api-keys';
 import mockAuthentication from './config/authentication';
 import mockConfig from './config/config';
+import mockEmails from './config/emails';
 import mockIntegrations from './config/integrations';
 import mockInvites from './config/invites';
+import mockLabels from './config/labels';
 import mockMembers from './config/members';
 import mockPages from './config/pages';
 import mockPosts from './config/posts';
@@ -10,7 +12,7 @@ import mockRoles from './config/roles';
 import mockSettings from './config/settings';
 import mockSite from './config/site';
 import mockSlugs from './config/slugs';
-import mockSubscribers from './config/subscribers';
+import mockSnippets from './config/snippets';
 import mockTags from './config/tags';
 import mockThemes from './config/themes';
 import mockUploads from './config/uploads';
@@ -25,7 +27,7 @@ export default function () {
     this.passthrough('/ghost/assets/**');
 
     // this.urlPrefix = '';    // make this `http://localhost:8080`, for example, if your API is on a different server
-    this.namespace = '/ghost/api/canary/admin'; // make this `api`, for example, if your API is namespaced
+    this.namespace = '/ghost/api/v3/admin'; // make this `api`, for example, if your API is namespaced
     this.timing = 1000; // delay for each request, automatically set to 0 during testing
     this.logging = true;
 
@@ -33,13 +35,12 @@ export default function () {
     // this.put('/posts/:id/', versionMismatchResponse);
     // mockTags(this);
     // this.loadFixtures('settings');
-    // mockMembers(this);
+    mockSnippets(this);
 
     // keep this line, it allows all other API requests to hit the real server
     this.passthrough();
 
     // add any external domains to make sure those get passed through too
-    this.passthrough('https://count.ghost.org/');
     this.passthrough('http://www.gravatar.com/**');
     this.passthrough('https://cdn.jsdelivr.net/**');
     this.passthrough('https://api.unsplash.com/**');
@@ -49,23 +50,24 @@ export default function () {
 // Mock all endpoints here as there is no real API during testing
 export function testConfig() {
     // this.urlPrefix = '';    // make this `http://localhost:8080`, for example, if your API is on a different server
-    this.namespace = '/ghost/api/canary/admin'; // make this `api`, for example, if your API is namespaced
+    this.namespace = '/ghost/api/v3/admin'; // make this `api`, for example, if your API is namespaced
     // this.timing = 400;      // delay for each request, automatically set to 0 during testing
     this.logging = false;
 
     mockApiKeys(this);
     mockAuthentication(this);
     mockConfig(this);
+    mockEmails(this);
     mockIntegrations(this);
     mockInvites(this);
     mockMembers(this);
+    mockLabels(this);
     mockPages(this);
     mockPosts(this);
     mockRoles(this);
     mockSettings(this);
     mockSite(this);
     mockSlugs(this);
-    mockSubscribers(this);
     mockTags(this);
     mockThemes(this);
     mockUploads(this);
@@ -83,14 +85,6 @@ export function testConfig() {
     });
 
     /* External sites ------------------------------------------------------- */
-
-    let downloadCount = 0;
-    this.get('https://count.ghost.org/', function () {
-        downloadCount += 1;
-        return {
-            count: downloadCount
-        };
-    });
 
     this.head('http://www.gravatar.com/avatar/:md5', function () {
         return '';

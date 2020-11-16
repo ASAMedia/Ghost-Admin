@@ -57,9 +57,11 @@
 @import "layouts/error.css";
 @import "layouts/apps.css";
 @import "layouts/packages.css";
-@import "layouts/subscribers.css";
 @import "layouts/labs.css";
 @import "layouts/whats-new.css";
+@import "layouts/preview-email.css";
+@import "layouts/portal-settings.css";
+@import "layouts/billing.css";
 
 
 :root {
@@ -88,8 +90,8 @@ input,
 .gh-select,
 .for-switch .input-toggle-component,
 .gh-select select,
-.settings-menu-container:not(.ember-power-select-multiple-trigger):not(.tag-settings) input,
-.settings-menu-container:not(.tag-settings) .gh-input,
+.settings-menu-container:not(.ember-power-select-multiple-trigger):not(.tag-settings) input:not([disabled]),
+.settings-menu-container:not(.tag-settings) .gh-input:not([disabled]),
 .settings-menu-pane .gh-date-time-picker-date,
 .settings-menu-pane .gh-date-time-picker-time {
     color: var(--darkgrey);
@@ -108,6 +110,19 @@ input:focus,
 .for-radio label:hover input:not(:checked) + .input-toggle-component {
     /* light=>dark theme => lightgrey=>middarkgrey */
     border-color: color-mod(var(--lightgrey) l(+10%));
+}
+
+.gh-input-append {
+    border-color: color-mod(var(--lightgrey));
+}
+
+.gh-input-group .gh-input:focus + .gh-input-append {
+    border-color: color-mod(var(--lightgrey) l(+10%));
+}
+
+.gh-input-append,
+.gh-input-append:before {
+    background: color-mod(var(--lightgrey));
 }
 
 .settings-menu-container,
@@ -154,6 +169,20 @@ input:focus,
     color: var(--darkgrey);
 }
 
+.ember-power-calendar-day--today,
+.ember-power-calendar-day:not([disabled]):hover {
+    background-color: color-mod(var(--lightgrey) l(-5%));
+}
+
+.ember-power-calendar-day--selected,
+.ember-power-calendar-day--selected:not([disabled]):hover {
+    background: color-mod(var(--blue) l(-10%));
+}
+
+.ember-power-calendar-day--interactive[disabled] {
+    opacity: 0.2;
+}
+
 .gh-main,
 .gh-nav,
 .gh-unsplash-window {
@@ -173,6 +202,14 @@ input:focus,
     border: color-mod(var(--darkgrey) l(-27%) blackness(+15%)) 1px solid;
 }
 
+.view-actions .gh-btn:not(.gh-btn-green):not(.gh-btn-blue):not(.gh-btn-red) {
+    border-color: color-mod(var(--darkgrey) l(-27%) blackness(+15%) alpha(50%));
+}
+
+.gh-btn-group .gh-btn:first-of-type {
+    border-right: none !important;
+}
+
 .gh-btn-blue,
 .gh-btn-green,
 .gh-btn-red {
@@ -189,6 +226,7 @@ input:focus,
     border: none !important;
 }
 
+
 .settings-menu-delete-button {
     color: var(--red);
     border: none !important;
@@ -204,13 +242,13 @@ input:focus,
     stroke-width: 2px;
 }
 
-.dropdown-menu > li > a,
-.dropdown-menu > li > button {
+.dropdown-menu li > a,
+.dropdown-menu li > button {
     color: color-mod(var(--lightgrey) lightness(+20%));
 }
 
-.dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus,
-.dropdown-menu > li > button:hover, .dropdown-menu > li > button:focus {
+.dropdown-menu li > a:hover, .dropdown-menu li > a:focus,
+.dropdown-menu li > button:hover, .dropdown-menu li > button:focus {
     color: var(--lightgrey);
     background: color-mod(var(--dark-main-bg-color) l(-2%));
 }
@@ -267,12 +305,12 @@ input:focus,
     background: var(--lightgrey);
 }
 
-.dropdown-menu > li > a, .dropdown-menu > li > button {
+.dropdown-menu li > a, .dropdown-menu li > button {
     color: var(--darkgrey);
 }
 
-.dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus,
-.dropdown-menu > li > button:hover, .dropdown-menu > li > button:focus {
+.dropdown-menu li > a:hover, .dropdown-menu li > a:focus,
+.dropdown-menu li > button:hover, .dropdown-menu li > button:focus {
     color: #fff;
 }
 
@@ -318,6 +356,10 @@ input:focus,
 }
 
 .gh-markdown-editor .CodeMirror-cursor {
+    border-color: #fff;
+}
+
+.koenig-card-html--editor .CodeMirror-cursor {
     border-color: #fff;
 }
 
@@ -386,6 +428,20 @@ input:focus,
     background: #212A2E;
 }
 
+.settings-code-editor .CodeMirror-gutters,
+.settings-code code {
+    background-color: var(--white);
+}
+
+.settings-code-editor .CodeMirror {
+    background: var(--white);
+}
+
+.blog-logo,
+.blog-icon {
+    background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Ctitle%3ERectangle%3C/title%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cpath fill='%23303e46' d='M0 0h24v24H0z'/%3E%3Cpath fill='%233e515b' d='M0 0h12v12H0zM12 12h12v12H12z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
 .id-item {
     background: #212A2E;
 }
@@ -398,15 +454,16 @@ input:focus,
     color: color-mod(#183691 l(+25%));
 }
 
-.subscribers-table table .gh-btn svg {
-    fill: var(--darkgrey);
-}
-
 .id-mailchimp img,
 .id-typeform img,
 .id-buffer img,
+.id-unsplash,
 .id-more img {
     filter: invert(100%);
+}
+
+.dark-no-shadow {
+    box-shadow: none;
 }
 
 .gh-nav {
@@ -455,8 +512,14 @@ input:focus,
     background-color: transparent;
 }
 
-/* Dark style Lists */
 
+/* Koenig styles */
+.kg-link-input {
+    border-color: var(--blue) !important;
+}
+
+
+/* Dark style Lists */
 .gh-list {
     background: #212A2E;
 }
@@ -466,4 +529,35 @@ input:focus,
 .gh-list-row:not(.header):hover .gh-list-data,
 .apps-grid-cell:hover {
     background: color-mod(var(--lightgrey) l(-9%));
+}
+
+
+/* Members */
+.gh-members-chart-header {
+    background: color-mod(var(--lightgrey) l(-9%));
+}
+.gh-members-chart-header .gh-contentfilter-type .gh-contentfilter-menu-trigger {
+    box-shadow: 0 0 0 1px color-mod(var(--darkgrey) l(-27%) blackness(+15%) alpha(50%));
+}
+
+.gh-members-import-table::before {
+    background: #212A2E;
+}
+
+.gh-members-import-table::after {
+    background: #212A2E;
+}
+.gh-import-member-select,
+.gh-import-member-select select {
+    background: none !important;
+}
+
+.modal-fullsettings-preview-container,
+.fullscreen-modal-email-preview .gh-pe-mobile-container,
+.fullscreen-modal-email-preview .gh-pe-desktop-container {
+    background: #1D252B;
+}
+
+.gh-pe-mobile-bezel {
+    background: #2b373e;
 }

@@ -1,13 +1,12 @@
 import Ember from 'ember';
-import Model from 'ember-data/model';
+import Model, {attr, belongsTo, hasMany} from '@ember-data/model';
 import ValidationEngine from 'ghost-admin/mixins/validation-engine';
-import attr from 'ember-data/attr';
 import boundOneWay from 'ghost-admin/utils/bound-one-way';
 import moment from 'moment';
-import {belongsTo, hasMany} from 'ember-data/relationships';
 import {compare} from '@ember/utils';
+// eslint-disable-next-line ghost/ember/no-observers
 import {computed, observer} from '@ember/object';
-import {equal, filterBy} from '@ember/object/computed';
+import {equal, filterBy, reads} from '@ember/object/computed';
 import {isBlank} from '@ember/utils';
 import {on} from '@ember/object/evented';
 import {inject as service} from '@ember/service';
@@ -91,6 +90,7 @@ export default Model.extend(Comparable, ValidationEngine, {
     twitterImage: attr('string'),
     twitterTitle: attr('string'),
     twitterDescription: attr('string'),
+    emailSubject: attr('string'),
     html: attr('string'),
     locale: attr('string'),
     visibility: attr('string'),
@@ -106,21 +106,16 @@ export default Model.extend(Comparable, ValidationEngine, {
     updatedBy: attr('number'),
     url: attr('string'),
     uuid: attr('string'),
+    emailRecipientFilter: attr('string', {defaultValue: 'none'}),
 
-    authors: hasMany('user', {
-        embedded: 'always',
-        async: false
-    }),
+    authors: hasMany('user', {embedded: 'always', async: false}),
     createdBy: belongsTo('user', {async: true}),
+    email: belongsTo('email', {async: false}),
     publishedBy: belongsTo('user', {async: true}),
-    tags: hasMany('tag', {
-        embedded: 'always',
-        async: false
-    }),
+    tags: hasMany('tag', {embedded: 'always', async: false}),
 
-    primaryAuthor: computed('authors.[]', function () {
-        return this.get('authors.firstObject');
-    }),
+    primaryAuthor: reads('authors.firstObject'),
+    primaryTag: reads('tags.firstObject'),
 
     scratch: null,
     titleScratch: null,
@@ -146,6 +141,8 @@ export default Model.extend(Comparable, ValidationEngine, {
     ogTitleScratch: boundOneWay('ogTitle'),
     twitterDescriptionScratch: boundOneWay('twitterDescription'),
     twitterTitleScratch: boundOneWay('twitterTitle'),
+
+    emailSubjectScratch: boundOneWay('emailSubject'),
 
     isPublished: equal('status', 'published'),
     isDraft: equal('status', 'draft'),
@@ -181,7 +178,7 @@ export default Model.extend(Comparable, ValidationEngine, {
         }
     }),
 
-    publishedAtBlogTZ: computed('publishedAtBlogDate', 'publishedAtBlogTime', 'settings.activeTimezone', {
+    publishedAtBlogTZ: computed('publishedAtBlogDate', 'publishedAtBlogTime', 'settings.timezone', {
         get() {
             return this._getPublishedAtBlogTZ();
         },
@@ -196,7 +193,7 @@ export default Model.extend(Comparable, ValidationEngine, {
         let publishedAtUTC = this.publishedAtUTC;
         let publishedAtBlogDate = this.publishedAtBlogDate;
         let publishedAtBlogTime = this.publishedAtBlogTime;
-        let blogTimezone = this.get('settings.activeTimezone');
+        let blogTimezone = this.get('settings.timezone');
 
         if (!publishedAtUTC && isBlank(publishedAtBlogDate) && isBlank(publishedAtBlogTime)) {
             return null;
@@ -230,14 +227,14 @@ export default Model.extend(Comparable, ValidationEngine, {
 
     // TODO: is there a better way to handle this?
     // eslint-disable-next-line ghost/ember/no-observers
-    _setPublishedAtBlogTZ: on('init', observer('publishedAtUTC', 'settings.activeTimezone', function () {
+    _setPublishedAtBlogTZ: on('init', observer('publishedAtUTC', 'settings.timezone', function () {
         let publishedAtUTC = this.publishedAtUTC;
         this._setPublishedAtBlogStrings(publishedAtUTC);
     })),
 
     _setPublishedAtBlogStrings(momentDate) {
         if (momentDate) {
-            let blogTimezone = this.get('settings.activeTimezone');
+            let blogTimezone = this.get('settings.timezone');
             let publishedAtBlog = moment.tz(momentDate, blogTimezone);
 
             this.set('publishedAtBlogDate', publishedAtBlog.format('YYYY-MM-DD'));

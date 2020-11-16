@@ -1,4 +1,5 @@
 import Controller from '@ember/controller';
+import {DEFAULT_QUERY_PARAMS} from 'ghost-admin/helpers/reset-query-params';
 import {alias} from '@ember/object/computed';
 import {computed} from '@ember/object';
 import {get} from '@ember/object';
@@ -21,6 +22,20 @@ const TYPES = [{
     value: 'featured'
 }];
 
+const VISIBILITIES = [{
+    name: 'All access',
+    value: null
+}, {
+    name: 'Public',
+    value: 'public'
+}, {
+    name: 'Members-only',
+    value: 'members'
+}, {
+    name: 'Paid members-only',
+    value: 'paid'
+}];
+
 const ORDERS = [{
     name: 'Newest',
     value: null
@@ -33,45 +48,49 @@ const ORDERS = [{
 }];
 
 export default Controller.extend({
-
     session: service(),
     store: service(),
 
-    queryParams: ['type', 'author', 'tag', 'order'],
-
-    type: null,
-    author: null,
-    tag: null,
-    order: null,
+    // default values for these are set in `init` and defined in `helpers/reset-query-params`
+    queryParams: ['type', 'access', 'author', 'tag', 'order'],
 
     _hasLoadedTags: false,
     _hasLoadedAuthors: false,
+    _hasLoadedSnippets: false,
 
     availableTypes: null,
+    availableVisibilities: null,
     availableOrders: null,
 
     init() {
         this._super(...arguments);
         this.availableTypes = TYPES;
         this.availableOrders = ORDERS;
+        this.availableVisibilities = VISIBILITIES;
+        this.setProperties(DEFAULT_QUERY_PARAMS.posts);
     },
 
     postsInfinityModel: alias('model'),
 
     showingAll: computed('type', 'author', 'tag', function () {
-        let {type, author, tag} = this.getProperties(['type', 'author', 'tag']);
+        let {type, author, tag, visibility} = this.getProperties(['type', 'visibility', 'author', 'tag']);
 
-        return !type && !author && !tag;
+        return !type && !visibility && !author && !tag;
     }),
 
     selectedType: computed('type', function () {
         let types = this.get('availableTypes');
-        return types.findBy('value', this.get('type'));
+        return types.findBy('value', this.get('type')) || {value: '!unknown'};
+    }),
+
+    selectedVisibility: computed('visibility', function () {
+        let visibilities = this.get('availableVisibilities');
+        return visibilities.findBy('value', this.get('visibility')) || {value: '!unknown'};
     }),
 
     selectedOrder: computed('order', function () {
         let orders = this.get('availableOrders');
-        return orders.findBy('value', this.get('order'));
+        return orders.findBy('value', this.get('order')) || {value: '!unknown'};
     }),
 
     _availableTags: computed(function () {
@@ -83,7 +102,6 @@ export default Controller.extend({
             .filter(tag => tag.get('id') !== null)
             .sort((tagA, tagB) => tagA.name.localeCompare(tagB.name, undefined, {ignorePunctuation: true}));
         let options = tags.toArray();
-
         options.unshiftObject({name: 'All tags', slug: null});
 
         return options;
@@ -93,7 +111,7 @@ export default Controller.extend({
         let tag = this.get('tag');
         let tags = this.get('availableTags');
 
-        return tags.findBy('slug', tag);
+        return tags.findBy('slug', tag) || {slug: '!unknown'};
     }),
 
     _availableAuthors: computed(function () {
@@ -113,36 +131,20 @@ export default Controller.extend({
         let author = this.get('author');
         let authors = this.get('availableAuthors');
 
-        return authors.findBy('slug', author);
+        return authors.findBy('slug', author) || {slug: '!unknown'};
     }),
 
-    typeClassNames: computed('type', function () {
-        let classNames = 'gh-contentfilter-menu gh-contentfilter-type';
-        if (this.get('type')) {
-            classNames = classNames + ' gh-contentfilter-selected';
-        }
-        return classNames;
-    }),
-
-    authorClassNames: computed('author', function () {
-        let classNames = 'gh-contentfilter-menu gh-contentfilter-author';        
-        if (this.get('author')) {
-            classNames = classNames + ' gh-contentfilter-selected';
-        }
-        return classNames;
-    }),
-
-    tagClassNames: computed('tag', function () {
-        let classNames = 'gh-contentfilter-menu gh-contentfilter-tag';
-        if (this.get('tag')) {
-            classNames = classNames + ' gh-contentfilter-selected';
-        }
-        return classNames;
+    snippets: computed(function () {
+        return this.store.peekAll('snippet');
     }),
 
     actions: {
         changeType(type) {
             this.set('type', get(type, 'value'));
+        },
+
+        changeVisibility(visibility) {
+            this.set('visibility', get(visibility, 'value'));
         },
 
         changeAuthor(author) {

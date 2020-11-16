@@ -13,6 +13,9 @@
     cursor: pointer;
 }
 
+.default-cursor {
+    cursor: default;
+}
 
 /* Buttons */
 button, .btn-base {
@@ -180,7 +183,6 @@ button, .btn-base {
     position: absolute;
     bottom: calc(100% + 4px);
     left: 50%;
-    width: max-content;
     white-space: nowrap;
     padding: 3px 7px;
     border-radius: 3px;
@@ -221,6 +223,19 @@ button, .btn-base {
 
 .tooltip-bottom:hover:before {
     transform: translate(-50%, 0);
+}
+
+.tooltip-centered:before {
+    position: absolute;
+    left: initial;
+    bottom: initial;
+    top: 50%;
+    right: 208px;
+    transform: translateY(-50%);
+}
+
+.tooltip-centered:hover:before {
+    transform: translate(0, -50%);
 }
 
 

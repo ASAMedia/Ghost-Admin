@@ -1,10 +1,9 @@
-/* global key */
 import Component from '@ember/component';
 import Ember from 'ember';
-import boundOneWay from 'ghost-admin/utils/bound-one-way';
 import {computed} from '@ember/object';
 import {htmlSafe} from '@ember/string';
-import {reads} from '@ember/object/computed';
+import {or} from '@ember/object/computed';
+import {run} from '@ember/runloop';
 import {inject as service} from '@ember/service';
 
 const {Handlebars} = Ember;
@@ -12,23 +11,34 @@ const {Handlebars} = Ember;
 export default Component.extend({
     feature: service(),
     config: service(),
-    mediaQueries: service(),
+    settings: service(),
 
     tag: null,
-
-    isViewingSubview: false,
+    scratchTag: null,
 
     // Allowed actions
     setProperty: () => {},
-    showDeleteTagModal: () => {},
 
-    scratchName: boundOneWay('tag.name'),
-    scratchSlug: boundOneWay('tag.slug'),
-    scratchDescription: boundOneWay('tag.description'),
-    scratchMetaTitle: boundOneWay('tag.metaTitle'),
-    scratchMetaDescription: boundOneWay('tag.metaDescription'),
+    twitterTitle: or('scratchTag.twitterTitle', 'seoTitle'),
+    twitterDescription: or('scratchTag.twitterDescription', 'seoDescription', 'settings.metaDescription', ''),
+    twitterImage: or('tag.twitterImage', 'tag.featureImage'),
 
-    isMobile: reads('mediaQueries.maxWidth600'),
+    facebookTitle: or('scratchTag.ogTitle', 'seoTitle'),
+    facebookDescription: or('scratchTag.ogDescription', 'seoDescription', 'settings.metaDescription', ''),
+    facebookImage: or('tag.ogImage', 'tag.featureImage'),
+
+    accentColor: computed('tag.accentColor', function () {
+        let color = this.get('tag.accentColor');
+        if (color && color[0] === '#') {
+            return color.slice(1);
+        }
+        return color;
+    }),
+
+    accentColorBackgroundStyle: computed('tag.accentColor', function () {
+        let color = this.get('tag.accentColor') || '#ffffff';
+        return htmlSafe(`background-color: ${color}`);
+    }),
 
     title: computed('tag.isNew', function () {
         if (this.get('tag.isNew')) {
@@ -38,10 +48,10 @@ export default Component.extend({
         }
     }),
 
-    seoTitle: computed('scratchName', 'scratchMetaTitle', function () {
-        let metaTitle = this.scratchMetaTitle || '';
-
-        metaTitle = metaTitle.length > 0 ? metaTitle : this.scratchName;
+    seoTitle: computed('scratchTag.{name,metaTitle}', function () {
+        const settingsTitle = this.get('settings.title') || '';
+        const tagName = settingsTitle ? `${this.scratchTag.name} - ${settingsTitle}` : this.scratchTag.name;
+        let metaTitle = this.scratchTag.metaTitle || tagName;
 
         if (metaTitle && metaTitle.length > 70) {
             metaTitle = metaTitle.substring(0, 70).trim();
@@ -52,14 +62,15 @@ export default Component.extend({
         return metaTitle;
     }),
 
-    seoURL: computed('scratchSlug', function () {
+    seoURL: computed('scratchTag.{canonicalUrl,slug}', function () {
         let blogUrl = this.get('config.blogUrl');
-        let seoSlug = this.scratchSlug || '';
+        let seoSlug = this.scratchTag.slug || '';
 
-        let seoURL = `${blogUrl}/tag/${seoSlug}`;
+        let seoURL = this.scratchTag.canonicalUrl || `${blogUrl}/tag/${seoSlug}`;
 
         // only append a slash to the URL if the slug exists
-        if (seoSlug) {
+
+        if (!seoURL.endsWith('/')) {
             seoURL += '/';
         }
 
@@ -72,10 +83,10 @@ export default Component.extend({
         return seoURL;
     }),
 
-    seoDescription: computed('scratchDescription', 'scratchMetaDescription', function () {
-        let metaDescription = this.scratchMetaDescription || '';
+    seoDescription: computed('scratchTag.{description,metaDescription}', function () {
+        let metaDescription = this.scratchTag.metaDescription || '';
 
-        metaDescription = metaDescription.length > 0 ? metaDescription : this.scratchDescription;
+        metaDescription = metaDescription.length > 0 ? metaDescription : this.scratchTag.description;
 
         if (metaDescription && metaDescription.length > 156) {
             metaDescription = metaDescription.substring(0, 156).trim();
@@ -86,22 +97,25 @@ export default Component.extend({
         return metaDescription;
     }),
 
-    didReceiveAttrs() {
-        this._super(...arguments);
-
-        let oldTagId = this._oldTagId;
-        let newTagId = this.get('tag.id');
-
-        if (newTagId !== oldTagId) {
-            this.reset();
-        }
-
-        this._oldTagId = newTagId;
-    },
-
     actions: {
         setProperty(property, value) {
             this.setProperty(property, value);
+        },
+
+        setTwitterImage(image) {
+            this.setProperty('twitterImage', image);
+        },
+
+        clearTwitterImage() {
+            this.setProperty('twitterImage', '');
+        },
+
+        setOgImage(image) {
+            this.setProperty('ogImage', image);
+        },
+
+        clearOgImage() {
+            this.setProperty('ogImage', '');
         },
 
         setCoverImage(image) {
@@ -112,32 +126,67 @@ export default Component.extend({
             this.setProperty('featureImage', '');
         },
 
-        openMeta() {
-            this.set('isViewingSubview', true);
+        validateCanonicalUrl() {
+            let newUrl = this.get('scratchTag.canonicalUrl');
+            let oldUrl = this.get('tag.canonicalUrl');
+            let errMessage = '';
+
+            this.get('tag.errors').remove('canonicalUrl');
+            this.get('tag.hasValidated').removeObject('canonicalUrl');
+
+            if (newUrl === '') {
+                this.setProperty('canonicalUrl', '');
+                return;
+            }
+
+            if (!newUrl) {
+                newUrl = oldUrl;
+            }
+
+            try {
+                new URL(newUrl);
+                this.setProperty('canonicalUrl', '');
+                run.schedule('afterRender', this, function () {
+                    this.setProperty('canonicalUrl', newUrl);
+                });
+            } catch (err) {
+                errMessage = 'The url should be a valid url';
+                this.get('tag.errors').add('canonicalUrl', errMessage);
+                this.get('tag.hasValidated').pushObject('canonicalUrl');
+            }
         },
 
-        closeMeta() {
-            this.set('isViewingSubview', false);
-        },
+        validateAccentColor() {
+            let newColor = this.get('accentColor');
+            let oldColor = this.get('tag.accentColor');
+            let errMessage = '';
 
-        deleteTag() {
-            this.showDeleteTagModal();
+            this.get('tag.errors').remove('accentColor');
+            this.get('tag.hasValidated').removeObject('accentColor');
+
+            if (newColor === '') {
+                this.setProperty('accentColor', '');
+                return;
+            }
+
+            if (!newColor) {
+                newColor = oldColor;
+            }
+
+            if (newColor[0] !== '#') {
+                newColor = `#${newColor}`;
+            }
+
+            if (newColor.match(/#[0-9A-Fa-f]{6}$/)) {
+                this.setProperty('accentColor', '');
+                run.schedule('afterRender', this, function () {
+                    this.setProperty('accentColor', newColor);
+                });
+            } else {
+                errMessage = 'The color should be in valid hex format';
+                this.get('tag.errors').add('accentColor', errMessage);
+                this.get('tag.hasValidated').pushObject('accentColor');
+            }
         }
-    },
-
-    reset() {
-        this.set('isViewingSubview', false);
-        if (this.$()) {
-            this.$('.settings-menu-pane').scrollTop(0);
-        }
-    },
-
-    focusIn() {
-        key.setScope('tag-settings-form');
-    },
-
-    focusOut() {
-        key.setScope('default');
     }
-
 });

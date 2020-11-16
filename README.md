@@ -1,6 +1,6 @@
 # Ghost-Admin
 
-[![Build Status](https://travis-ci.org/TryGhost/Ghost-Admin.svg?branch=master)](https://travis-ci.org/TryGhost/Ghost-Admin)
+![](https://github.com/TryGhost/Ghost-Admin/workflows/Test%20Suite/badge.svg?branch=master)
 
 This is the home of Ember.js based admin client that ships with [Ghost](https://github.com/tryghost/ghost).
 
@@ -14,4 +14,4 @@ Bugs and issues (even if they only affect the admin client) should be opened on 
 
 # Copyright & License
 
-Copyright (c) 2013-2019 Ghost Foundation - Released under the [MIT license](LICENSE). Ghost and the Ghost Logo are trademarks of Ghost Foundation Ltd. Please see our [trademark policy](https://ghost.org/trademark/) for info on acceptable usage.
+Copyright (c) 2013-2020 Ghost Foundation - Released under the [MIT license](LICENSE). Ghost and the Ghost Logo are trademarks of Ghost Foundation Ltd. Please see our [trademark policy](https://ghost.org/trademark/) for info on acceptable usage.

@@ -9,6 +9,8 @@ export default AuthenticatedRoute.extend({
 
     queryParams: {
         type: {refreshModel: true},
+        visibility: {refreshModel: true},
+        access: {refreshModel: true},
         author: {refreshModel: true},
         tag: {refreshModel: true},
         order: {refreshModel: true}
@@ -38,7 +40,7 @@ export default AuthenticatedRoute.extend({
     model(params) {
         return this.session.user.then((user) => {
             let queryParams = {};
-            let filterParams = {tag: params.tag};
+            let filterParams = {tag: params.tag, visibility: params.visibility};
             let paginationParams = {
                 perPageParam: 'limit',
                 totalPagesParam: 'meta.pagination.pages'
@@ -77,7 +79,7 @@ export default AuthenticatedRoute.extend({
         });
     },
 
-    // trigger a background load of all tags and authors for use in the filter dropdowns
+    // trigger a background load of all tags, authors, and snipps for use in filter dropdowns and card menu
     setupController(controller) {
         this._super(...arguments);
 
@@ -94,6 +96,12 @@ export default AuthenticatedRoute.extend({
                 });
             }
         });
+
+        if (!controller._hasLoadedSnippets) {
+            this.store.query('snippet', {limit: 'all'}).then(() => {
+                controller._hasLoadedSnippets = true;
+            });
+        }
     },
 
     actions: {

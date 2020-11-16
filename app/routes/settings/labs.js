@@ -4,6 +4,7 @@ import {inject as service} from '@ember/service';
 
 export default AuthenticatedRoute.extend(CurrentUserSettings, {
     settings: service(),
+    notifications: service(),
 
     beforeModel() {
         this._super(...arguments);

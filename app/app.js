@@ -1,10 +1,17 @@
 import 'ghost-admin/utils/link-component';
 import 'ghost-admin/utils/route';
 import Application from '@ember/application';
-import Resolver from './resolver';
-import config from './config/environment';
+import Resolver from 'ember-resolver';
+import config from 'ghost-admin/config/environment';
 import loadInitializers from 'ember-load-initializers';
+import moment from 'moment';
 import {registerWarnHandler} from '@ember/debug';
+
+moment.updateLocale('en', {
+    relativeTime: {
+        m: '1 minute'
+    }
+});
 
 const App = Application.extend({
     Resolver,

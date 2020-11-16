@@ -1,8 +1,13 @@
-import DS from 'ember-data';
+// TODO: remove usage of Ember Data's private `Errors` class when refactoring validations
+// eslint-disable-next-line
+import CustomViewValidator from 'ghost-admin/validators/custom-view';
+import DS from 'ember-data'; // eslint-disable-line
 import IntegrationValidator from 'ghost-admin/validators/integration';
 import InviteUserValidator from 'ghost-admin/validators/invite-user';
+import LabelValidator from 'ghost-admin/validators/label';
+import MemberValidator from 'ghost-admin/validators/member';
 import Mixin from '@ember/object/mixin';
-import Model from 'ember-data/model';
+import Model from '@ember-data/model';
 import NavItemValidator from 'ghost-admin/validators/nav-item';
 import PostValidator from 'ghost-admin/validators/post';
 import RSVP from 'rsvp';
@@ -12,7 +17,7 @@ import SetupValidator from 'ghost-admin/validators/setup';
 import SigninValidator from 'ghost-admin/validators/signin';
 import SignupValidator from 'ghost-admin/validators/signup';
 import SlackIntegrationValidator from 'ghost-admin/validators/slack-integration';
-import SubscriberValidator from 'ghost-admin/validators/subscriber';
+import SnippetValidator from 'ghost-admin/validators/snippet';
 import TagSettingsValidator from 'ghost-admin/validators/tag-settings';
 import UserValidator from 'ghost-admin/validators/user';
 import WebhookValidator from 'ghost-admin/validators/webhook';
@@ -33,6 +38,7 @@ export default Mixin.create({
     // in that case the model will be the class that the ValidationEngine
     // was mixed into, i.e. the controller or Ember Data model.
     validators: {
+        customView: CustomViewValidator,
         inviteUser: InviteUserValidator,
         navItem: NavItemValidator,
         post: PostValidator,
@@ -42,11 +48,13 @@ export default Mixin.create({
         signin: SigninValidator,
         signup: SignupValidator,
         slackIntegration: SlackIntegrationValidator,
-        subscriber: SubscriberValidator,
         tag: TagSettingsValidator,
         user: UserValidator,
+        member: MemberValidator,
         integration: IntegrationValidator,
-        webhook: WebhookValidator
+        webhook: WebhookValidator,
+        label: LabelValidator,
+        snippet: SnippetValidator
     },
 
     // This adds the Errors object to the validation engine, and shouldn't affect

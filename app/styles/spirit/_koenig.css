@@ -9,7 +9,7 @@
 .koenig-editor__editor {
     font-family: var(--font-family);
     font-size: 1.7rem;
-    font-weight: 200;
+    font-weight: 300;
     letter-spacing: 0.1px;
     color: var(--darkgrey);
     text-rendering: optimizeLegibility;
@@ -18,7 +18,8 @@
     -moz-font-feature-settings: "liga" on;
 }
 
-.koenig-editor__editor.__has-no-content:after {
+.koenig-editor__editor.__has-no-content:after,
+.koenig-text-replacement-html-input__editor.__has-no-content:after{
     font-family: georgia,serif;
     font-weight: 300;
     letter-spacing: .02rem;
@@ -57,46 +58,43 @@
 .koenig-editor__editor h5,
 .koenig-editor__editor h6 {
     font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, helvetica neue, helvetica, ubuntu, roboto, noto, segoe ui, arial, sans-serif;
-    font-weight: 700;
+    font-weight: 600;
+    color: var(--darkgrey-d1);
 }
 
+/* H1 should be almost the same size as the post title to suggest avoid using it */
 .koenig-editor__editor h1 {
-    font-size: 3.2rem;
-    line-height: 1.4em;
-    letter-spacing: .04rem;
+    font-size: 4.4rem;
+    line-height: 1.15em;
 }
 
 .koenig-editor__editor h2 {
-    font-size: 2.7rem;
-    line-height: 1.4em;
-    letter-spacing: .04rem;
+    font-size: 3.2rem;
+    line-height: 1.32em;
 }
 
 .koenig-editor__editor h3 {
-    font-size: 2.2rem;
-    line-height: 1.6em;
-    letter-spacing: .04rem;
+    font-size: 2.5rem;
+    line-height: 1.35em;
 }
 
+/* H4 is almost the same size as H3 to discourage using it */
 .koenig-editor__editor h4 {
-    font-size: 1.92rem;
+    font-size: 2.2rem;
     line-height: 1.4em;
-    letter-spacing: .04rem;
 }
 
 .koenig-editor__editor h5 {
-    font-size: 1.8rem;
+    font-size: 2.0rem;
     line-height: 1.4em;
-    letter-spacing: .06rem;
+    font-weight: 700;
 }
 
 .koenig-editor__editor h6 {
-    font-size: 1.65rem;
+    font-size: 1.85rem;
     line-height: 1.6em;
-    letter-spacing: .04rem;
+    font-weight: 700;
 }
-
-
 
 .koenig-editor__editor p + h1,
 .koenig-editor__editor p + h2,
@@ -226,7 +224,43 @@
 .koenig-editor__editor div + h4,
 .koenig-editor__editor div + h5,
 .koenig-editor__editor div + h6 {
-    margin: 2.8rem 0 0;
+    margin: 4.8rem 0 0;
+}
+
+/* Headings right after post title */
+.koenig-editor__editor h1:first-child,
+.koenig-editor__editor h2:first-child,
+.koenig-editor__editor h3:first-child,
+.koenig-editor__editor h4:first-child,
+.koenig-editor__editor h5:first-child,
+.koenig-editor__editor h6:first-child {
+    margin-top: 0rem;
+}
+
+@media (max-width: 500px) {
+    .koenig-editor__editor h1 {
+        font-size: 3.2rem;
+    }
+
+    .koenig-editor__editor h2 {
+        font-size: 2.8rem;
+    }
+
+    .koenig-editor__editor h3 {
+        font-size: 2.4rem;
+    }
+
+    .koenig-editor__editor h4 {
+        font-size: 2.3rem;
+    }
+
+    .koenig-editor__editor h5 {
+        font-size: 2.0rem;
+    }
+
+    .koenig-editor__editor h6 {
+        font-size: 1.9rem;
+    }
 }
 
 
@@ -240,9 +274,8 @@
  {
     font-family: georgia,serif;
     font-weight: 400;
-    letter-spacing: .02rem;
     line-height: 1.6em;
-    font-size: 1.92rem;
+    font-size: 2.0rem;
 }
 
 .koenig-editor__editor h1 + p {
@@ -250,14 +283,14 @@
 }
 
 .koenig-editor__editor h2 + p {
-    margin: 0.52rem 0 0;
+    margin: 0.8rem 0 0;
 }
 
 .koenig-editor__editor h3 + p,
 .koenig-editor__editor h4 + p,
 .koenig-editor__editor h5 + p,
 .koenig-editor__editor h6 + p {
-    margin: 0.52rem 0 0;
+    margin: 0.8rem 0 0;
 }
 
 .koenig-editor__editor p + p,
@@ -265,11 +298,26 @@
 .koenig-editor__editor ul + p,
 .koenig-editor__editor ol + p
  {
-    margin: 3.6rem 0 0;
+    margin: 3.2rem 0 0;
 }
 
 .koenig-editor__editor div + p { /* Mobiledoc cards can be addressed by their wrapper div element */
     margin: 2.8rem 0 0;
+}
+
+/* Paragraph right after title */
+.koenig-editor__editor p:first-child {
+    margin-top: 0rem;
+}
+
+@media (max-width: 500px) {
+    .koenig-editor__editor p,
+    .koenig-editor__editor blockquote,
+    .koenig-editor__editor ul:not(.kg-action-bar):not(.kg-link-toolbar),
+    .koenig-editor__editor ol
+    {
+        font-size: 1.8rem;
+    }
 }
 
 
@@ -306,7 +354,7 @@
 
 .koenig-editor__editor p + ul:not(.kg-action-bar):not(.kg-link-toolbar),
 .koenig-editor__editor p + ol {
-    margin: 1.0rem 0 0;
+    margin: 3.0rem 0 0;
 }
 
 .koenig-editor__editor ul:not(.kg-action-bar):not(.kg-link-toolbar) + ul:not(.kg-action-bar):not(.kg-link-toolbar),
@@ -315,7 +363,7 @@
 .koenig-editor__editor ol + ol,
 .koenig-editor__editor blockquote + ul:not(.kg-action-bar):not(.kg-link-toolbar),
 .koenig-editor__editor blockquote + ol {
-    margin: 3.2rem 0 0;
+    margin: 3.0rem 0 0;
 }
 
 .koenig-editor__editor h1 + ul:not(.kg-action-bar):not(.kg-link-toolbar),
@@ -345,6 +393,14 @@
 .koenig-editor__editor ol ul:not(.kg-action-bar):not(.kg-link-toolbar),
 .koenig-editor__editor ol ol {
     margin: 1.0rem 0 2rem;
+}
+
+/* Lists right after title */
+.koenig-editor__editor ul:not(.kg-action-bar):not(.kg-link-toolbar):first-child,
+.koenig-editor__editor ol:first-child,
+.koenig-editor__editor ul:not(.kg-action-bar):not(.kg-link-toolbar):first-child,
+.koenig-editor__editor ol:first-child {
+    margin-top: 0rem;
 }
 
 
@@ -383,12 +439,17 @@
     margin: 1.6rem 0;
 }
 
+/* First card right after post title */
+
+.koenig-editor__editor > div:first-child {
+    margin-top: 3.2rem;
+}
 
 /* Links
 /* -------------------------------------------------------------------- */
 
 .koenig-editor__editor a {
-    color: var(--darkgrey);
+    color: var(--darkgrey-d2);
     text-decoration: none;
     box-shadow: 0 1px 0 var(--white), 0 2px 0 var(--blue);
 }
@@ -443,8 +504,8 @@
 
 .koenig-editor__editor code {
     border-radius: 2px;
-    color: var(--pink);
-    font-size: 1.65rem;
+    color: var(--darkgrey-d2);
+    font-size: .8em;
     line-height: 1em;
     padding: .4rem .4rem .2rem;
     vertical-align: middle;
@@ -454,7 +515,7 @@
 .koenig-editor__editor pre code {
     border: none;
     font-size: 1.6rem;
-    color: var(--pink);
+    color: var(--darkgrey-d2);
     padding: 0;
 }
 
@@ -466,7 +527,7 @@
     overflow: auto;
     white-space: pre;
     width: 100%;
-    color: var(--darkgrey);
+    color: var(--darkgrey-d2);
 }
 
 .koenig-editor__editor pre.js-embed-placeholder,
@@ -623,8 +684,7 @@
 }
 
 .kg-card-selected,
-.kg-card-selected:hover
- {
+.kg-card-selected:hover {
     box-shadow: 0 0 0 2px var(--blue);
 }
 
@@ -744,6 +804,44 @@
     color: var(--darkgrey);
 }
 
+.kg-cardmenu-card-hover .kg-cardmenu-action-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity ease-in-out 0.15s;
+    padding: 5px;
+    margin-top: -2px;
+    margin-bottom: -2px;
+    margin-right: 8px;
+    border-radius: 3px;
+}
+
+.kg-cardmenu-card-hover:hover svg [data-selector="bg"] {
+    fill: #fff;
+}
+
+.kg-cardmenu-card-hover:hover .kg-cardmenu-action-icon {
+    opacity: 1.0;
+}
+
+.kg-cardmenu-card-hover .kg-cardmenu-action-icon:hover {
+    background: var(--whitegrey-d1);
+}
+
+.kg-cardmenu-card-hover .kg-cardmenu-action-icon svg {
+    margin: 0;
+    height: 1em;
+}
+
+.kg-cardmenu-card-hover .kg-cardmenu-action-icon svg path {
+    fill: var(--red);
+}
+
+.kg-cardmenu-card-hover .kg-cardmenu-action-icon:hover svg path {
+    fill: var(--red);
+}
+
 /* Padded container housing title + editor canvas, scrollable content */
 .gh-koenig-editor-pane {
     padding: 11vw 92px;
@@ -796,21 +894,54 @@
 
 /* Chrome has a bug with its scrollbars on this element which has been reported here: https://bugs.chromium.org/p/chromium/issues/detail?id=697381 */
 .koenig-cardmenu {
-    width: 272px;
-    max-height: 500px;
+    width: 312px;
+    max-height: 440px;
+    padding-top: 0;
     background-clip: padding-box;
     z-index: 9999999; /* have to compete with codemirror */
     left: -16px;
+    top: -10px;
 }
 
+/*Firefox has a bug with padding-bottom being ignored when using overflow:auto which has been reported here: https://bugzilla.mozilla.org/show_bug.cgi?id=748518. Below solution works cross browsers*/
+.koenig-cardmenu:after {
+    content: "";
+    padding: .8rem;
+    display: block;
+}
 
 /* Cards
 /* --------------------------------------------------------------- */
+
+.kg-card-help {
+    background: color-mod(var(--lightgrey) l(+3%));
+    margin: 12px -13px -9px;
+    padding: 6px;
+}
+
+.kg-card-help p {
+    text-align: center;
+    font-family: sans-serif;
+    font-size: 1.4rem;
+    color: var(--midlightgrey);
+}
+
+.kg-card-help a.kg-card-help-icon-link {
+    text-decoration: none;
+    box-shadow: none;
+    padding-bottom: 2px;
+}
+
+.kg-card-help svg {
+    width: 1.4rem;
+}
+
 .kg-bookmark-card {
     width: 100%;
     box-sizing: border-box;
     border: 1px solid var(--whitegrey);
     background: var(--white);
+    border-radius: 4px;
 }
 
 .koenig-editor__editor .kg-bookmark-container {
@@ -845,7 +976,7 @@
     display: -webkit-box;
     font-size: 1.4rem;
     line-height: 1.5em;
-    margin-top: 10px;
+    margin-top: 3px;
     color: var(--middarkgrey);
     font-weight: 400;
     max-height: 44px;
@@ -867,6 +998,8 @@
     position: absolute;
     top: 0;
     left: 0;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
 }
 
 .kg-bookmark-metadata {
@@ -875,7 +1008,7 @@
     font-weight: 500;
     display: flex;
     align-items: center;
-    margin-top: 14px;
+    margin-top: 22px;
 }
 
 .kg-bookmark-icon {
@@ -884,19 +1017,28 @@
     margin-right: 6px;
 }
 
-.kg-bookmark-author:after {
-    content: "•";
-    margin: 0 6px;
-}
-
 .kg-bookmark-publisher {
-    color: var(--blue);
     text-overflow: ellipsis;
     overflow: hidden;
     max-width: 240px;
     white-space: nowrap;
     display: block;
     line-height: 1.65em;
+}
+
+.kg-bookmark-author:before {
+    content: "•";
+    color: var(--darkgrey);
+    margin: 0 6px;
+}
+
+.kg-bookmark-author {
+    color: var(--middarkgrey);
+    font-weight: 400;
+}
+
+.kg-email-card p:first-of-type {
+    margin-top: 0;
 }
 
 

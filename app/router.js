@@ -1,5 +1,5 @@
 import EmberRouter from '@ember/routing/router';
-import config from './config/environment';
+import config from 'ghost-admin/config/environment';
 import ghostPaths from 'ghost-admin/utils/ghost-paths';
 
 const Router = EmberRouter.extend({
@@ -23,6 +23,10 @@ Router.map(function () {
     this.route('about');
     this.route('site');
 
+    this.route('billing', function () {
+        this.route('billing-sub', {path: '/*sub'});
+    });
+
     this.route('posts');
     this.route('pages');
 
@@ -35,13 +39,13 @@ Router.map(function () {
         this.route('user', {path: ':user_slug'});
     });
 
-    this.route('tags', function () {
-        this.route('tag', {path: ':tag_slug'});
-        this.route('new');
-    });
+    this.route('tags');
+    this.route('tag.new', {path: '/tags/new'});
+    this.route('tag', {path: '/tags/:tag_slug'});
 
     this.route('settings.general', {path: '/settings/general'});
     this.route('settings.labs', {path: '/settings/labs'});
+    this.route('settings.labs.members', {path: '/settings/labs/members'});
     this.route('settings.code-injection', {path: '/settings/code-injection'});
     this.route('settings.design', {path: '/settings/design'}, function () {
         this.route('uploadtheme');
@@ -61,12 +65,8 @@ Router.map(function () {
     this.route('members', function () {
         this.route('import');
     });
+    this.route('member.new', {path: '/members/new'});
     this.route('member', {path: '/members/:member_id'});
-
-    this.route('subscribers', function () {
-        this.route('new');
-        this.route('import');
-    });
 
     this.route('error404', {path: '/*path'});
 });

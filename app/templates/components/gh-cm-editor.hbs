@@ -1,5 +1,0 @@
-{{!-- display a standard textarea whilst waiting for CodeMirror to load/initialize --}}
-{{gh-textarea
-    class=(concat "gh-cm-editor-textarea " textareaClass)
-    value=(readonly _value)
-    input=(action "updateFromTextarea" value="target.value")}}

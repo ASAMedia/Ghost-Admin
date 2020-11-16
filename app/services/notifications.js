@@ -42,7 +42,7 @@ export default Service.extend({
 
     handleNotification(message, delayed) {
         // If this is an alert message from the server, treat it as html safe
-        if (typeof message.toJSON === 'function' && message.get('status') === 'alert') {
+        if (message.constructor.modelName === 'notification' && message.get('status') === 'alert') {
             message.set('message', htmlSafe(message.get('message')));
         }
 
@@ -75,26 +75,25 @@ export default Service.extend({
         this.handleNotification({
             message,
             status: 'alert',
+            description: options.description,
+            icon: options.icon,
             type: options.type,
-            key: options.key
+            key: options.key,
+            actions: options.actions
         }, options.delayed);
     },
 
     showNotification(message, options) {
         options = options || {};
 
-        if (!options.doNotCloseNotifications) {
-            this.closeNotifications();
-        } else {
-            // TODO: this should be removed along with showErrors
-            options.key = undefined;
-        }
-
         this.handleNotification({
             message,
             status: 'notification',
+            description: options.description,
+            icon: options.icon,
             type: options.type,
-            key: options.key
+            key: options.key,
+            actions: options.actions
         }, options.delayed);
     },
 
@@ -155,7 +154,7 @@ export default Service.extend({
     closeNotification(notification) {
         let content = this.content;
 
-        if (typeof notification.toJSON === 'function') {
+        if (notification.constructor.modelName === 'notification') {
             notification.deleteRecord();
             notification.save().finally(() => {
                 content.removeObject(notification);

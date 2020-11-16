@@ -1,5 +1,6 @@
 import Component from '@ember/component';
-import {computed} from '@ember/object';
+import config from 'ghost-admin/config/environment';
+import {action, computed} from '@ember/object';
 import {isBlank} from '@ember/utils';
 import {reads} from '@ember/object/computed';
 import {task, timeout} from 'ember-concurrency';
@@ -27,16 +28,20 @@ const GhTaskButton = Component.extend({
     attributeBindings: ['disabled', 'form', 'type', 'tabindex'],
 
     task: null,
+    taskArgs: undefined,
     disabled: false,
     defaultClick: false,
     buttonText: 'Save',
     idleClass: '',
     runningClass: '',
     showSuccess: true, // set to false if you want the spinner to show until a transition occurs
+    autoReset: true, // set to false if you want don't want task button to reset after timeout
     successText: 'Saved',
     successClass: 'gh-btn-green',
     failureText: 'Retry',
     failureClass: 'gh-btn-red',
+
+    isTesting: undefined,
 
     // Allowed actions
     action: () => {},
@@ -54,9 +59,11 @@ const GhTaskButton = Component.extend({
     }),
 
     isRunning: computed('task.last.isRunning', 'hasRun', 'showSuccess', function () {
-        let isRunning = this.get('task.last.isRunning');
+        let taskName = this.get('task.name');
+        let lastTaskName = this.get('task.last.task.name');
 
-        if (this.hasRun && this.get('task.last.value') && !this.showSuccess) {
+        let isRunning = (taskName === lastTaskName) && this.get('task.last.isRunning');
+        if (this.hasRun && (taskName === lastTaskName) && this.get('task.last.value') && !this.showSuccess) {
             isRunning = true;
         }
 
@@ -68,12 +75,15 @@ const GhTaskButton = Component.extend({
     }),
 
     isSuccess: computed('hasRun', 'isRunning', 'task.last.value', function () {
+        let taskName = this.get('task.name');
+        let lastTaskName = this.get('task.last.task.name');
+
         if (!this.hasRun || this.isRunning || !this.showSuccess) {
             return false;
         }
 
         let value = this.get('task.last.value');
-        return !isBlank(value) && value !== false;
+        return (taskName === lastTaskName) && !isBlank(value) && value !== false;
     }),
 
     isSuccessClass: computed('isSuccess', function () {
@@ -81,11 +91,14 @@ const GhTaskButton = Component.extend({
     }),
 
     isFailure: computed('hasRun', 'isRunning', 'isSuccess', 'task.last.error', function () {
+        let taskName = this.get('task.name');
+        let lastTaskName = this.get('task.last.task.name');
+
         if (!this.hasRun || this.isRunning || this.isSuccess) {
             return false;
         }
 
-        return this.get('task.last.error') !== undefined;
+        return (taskName === lastTaskName) && this.get('task.last.error') !== undefined;
     }),
 
     isFailureClass: computed('isFailure', function () {
@@ -99,6 +112,9 @@ const GhTaskButton = Component.extend({
     init() {
         this._super(...arguments);
         this._initialPerformCount = this.get('task.performCount');
+        if (this.isTesting === undefined) {
+            this.isTesting = config.environment === 'test';
+        }
     },
 
     click() {
@@ -117,7 +133,6 @@ const GhTaskButton = Component.extend({
             return false;
         }
 
-        let task = this.task;
         let taskName = this.get('task.name');
         let lastTaskName = this.get('task.last.task.name');
 
@@ -127,9 +142,8 @@ const GhTaskButton = Component.extend({
         if (this.isRunning && taskName === lastTaskName) {
             return;
         }
-
         this.action();
-        task.perform();
+        this._handleMainTask.perform();
 
         this._restartAnimation.perform();
 
@@ -145,22 +159,41 @@ const GhTaskButton = Component.extend({
         }
     },
 
+    handleReset: action(function () {
+        const isTaskSuccess = this.get('task.last.isSuccessful') && this.get('task.last.value');
+        if (this.autoReset && this.showSuccess && isTaskSuccess) {
+            this._resetButtonState.perform();
+        }
+    }),
+
     // when local validation fails there's no transition from failed->running
     // so we want to restart the retry spinner animation to show something
     // has happened when the button is clicked
     _restartAnimation: task(function* () {
-        if (this.$('.retry-animated').length) {
-            // eslint-disable-next-line
-            let elem = this.$('.retry-animated')[0];
+        let elem = this.element.querySelector('.retry-animated');
+        if (elem) {
             elem.classList.remove('retry-animated');
             yield timeout(10);
             elem.classList.add('retry-animated');
         }
-    })
-});
+    }),
 
-GhTaskButton.reopenClass({
-    positionalParams: ['buttonText']
+    _handleMainTask: task(function* () {
+        this._resetButtonState.cancelAll();
+        yield this.task.perform(this.taskArgs);
+        const isTaskSuccess = this.get('task.last.isSuccessful') && this.get('task.last.value');
+        if (this.autoReset && this.showSuccess && isTaskSuccess) {
+            this._resetButtonState.perform();
+        }
+    }),
+
+    _resetButtonState: task(function* () {
+        yield timeout(this.isTesting ? 50 : 2500);
+        if (!this.get('task.last.isRunning')) {
+            // Reset last task to bring button back to idle state
+            yield this.set('task.last', null);
+        }
+    }).restartable()
 });
 
 export default GhTaskButton;
