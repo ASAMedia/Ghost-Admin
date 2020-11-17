@@ -10,7 +10,7 @@ const Router = EmberRouter.extend({
 Router.map(function () {
     this.route('home', {path: '/'});
 
-    this.route('plan.vertretungsplan', {path: '/plans/vertretungsplan'});
+    this.route('plans.vertretungsplan', {path: '/plans/vertretungsplan'});
     this.route('plans.timetable', {path: '/plans/timetable'});
 
     this.route('setup', function () {

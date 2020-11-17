@@ -53,7 +53,7 @@ export default AuthenticatedRoute.extend(CurrentUserSettings, {
 
     buildRouteInfoMetadata() {
         return {
-            titleToken: 'Settings - General'
+            titleToken: 'Stundenpläne'
         };
     }
 });
