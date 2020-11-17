@@ -28,6 +28,16 @@
                 </a>
             </li>
         </ul>
+        {{!-- custom field for vertretungsplan--}}
+        <ul class="gh-nav-list">
+            <li class="gh-nav-list-h">Pläne</li>
+            <li class="relative">
+                <LinkTo @route="plans.vertretungsplan" data-test-nav="vertretungsplan">{{svg-jar "vertretungsplan"}}Vertretungsplan</LinkTo>
+                <LinkTo @route="plans.timetable" data-test-nav="timetable">{{svg-jar "calendar"}}Stundenpläne</LinkTo>
+            </li>
+        </ul>
+
+
         <ul class="gh-nav-list gh-nav-manage">
             <li class="gh-nav-list-h">Manage</li>
             <li class="gh-nav-list-new relative">
