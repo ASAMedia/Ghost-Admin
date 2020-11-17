@@ -45,6 +45,7 @@ export default BaseModel.extend(ValidationEngine, {
 
     // TODO: Once client-side permissions are in place,
     // remove the hard role check.
+    isPlanseditor: equal('role.name', 'Planseditor'),
     isContributor: equal('role.name', 'Contributor'),
     isAuthor: equal('role.name', 'Author'),
     isEditor: equal('role.name', 'Editor'),

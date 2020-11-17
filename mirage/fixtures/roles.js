@@ -44,5 +44,14 @@ export default [
         created_by: 1,
         updated_at: '2015-11-13T16:01:29.132Z',
         updated_by: 1
+    },
+    {
+        id: 6,
+        name: 'Planseditor',
+        description: 'Plans Editor',
+        created_at: '2015-11-13T16:01:29.132Z',
+        created_by: 1,
+        updated_at: '2015-11-13T16:01:29.132Z',
+        updated_by: 1
     }
 ];
