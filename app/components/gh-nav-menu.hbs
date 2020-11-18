@@ -29,6 +29,7 @@
             </li>
         </ul>
         {{!-- custom field for vertretungsplan--}}
+        {{#if (gh-user-can-plans this.session.user)}}
         <ul class="gh-nav-list">
             <li class="gh-nav-list-h">Pläne</li>
             <li class="relative">
@@ -36,7 +37,7 @@
                 <LinkTo @route="plans.timetable" data-test-nav="timetable">{{svg-jar "calendar"}}Stundenpläne</LinkTo>
             </li>
         </ul>
-
+        {{/if}}
 
         <ul class="gh-nav-list gh-nav-manage">
             <li class="gh-nav-list-h">Manage</li>

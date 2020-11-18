@@ -54,6 +54,8 @@ export default BaseModel.extend(ValidationEngine, {
 
     // These are used in enough places that it's useful to throw them here
     isOwnerOrAdmin: or('isOwner', 'isAdmin'),
+    //Added Support for PlansEditor
+    isEditorOrPlanseditor: or('isOwnerOrAdmin', 'isPlanseditor'),
     isAuthorOrContributor: or('isAuthor', 'isContributor'),
 
     isLoggedIn: computed('id', 'session.user.id', function () {
