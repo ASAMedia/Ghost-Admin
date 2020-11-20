@@ -45,7 +45,12 @@ export default BaseModel.extend(ValidationEngine, {
 
     // TODO: Once client-side permissions are in place,
     // remove the hard role check.
-    isPlanseditor: equal('role.name', 'Planseditor'),
+    isPlanseditorOnly: equal('role.name', 'Planseditor'),
+    isPlanseditorContributor: equal('role.name', 'Planseditor Contributor'),
+    isPlanseditorAuthor: equal('role.name', 'Planseditor Author'),
+    isPlanseditorEditor: equal('role.name', 'Planseditor Editor'),
+    isPlanseditor: or('isPlanseditorOnly', 'isPlanseditorContributor', 'isPlanseditorAuthor', 'isPlanseditorEditor'),
+
     isContributor: equal('role.name', 'Contributor'),
     isAuthor: equal('role.name', 'Author'),
     isEditor: equal('role.name', 'Editor'),
@@ -56,6 +61,7 @@ export default BaseModel.extend(ValidationEngine, {
     isOwnerOrAdmin: or('isOwner', 'isAdmin'),
     //Added Support for PlansEditor
     isEditorOrPlanseditor: or('isOwnerOrAdmin', 'isPlanseditor'),
+
     isAuthorOrContributor: or('isAuthor', 'isContributor'),
 
     isLoggedIn: computed('id', 'session.user.id', function () {
