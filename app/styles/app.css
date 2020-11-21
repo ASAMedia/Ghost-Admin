@@ -51,6 +51,7 @@
 @import "layouts/settings.css";
 @import "layouts/users.css";
 @import "layouts/user.css";
+@import "layouts/plans.css";
 @import "layouts/about.css";
 @import "layouts/tags.css";
 @import "layouts/members.css";
@@ -62,6 +63,7 @@
 @import "layouts/preview-email.css";
 @import "layouts/portal-settings.css";
 @import "layouts/billing.css";
+
 
 
 /* ---------------------------✈️----------------------------- */

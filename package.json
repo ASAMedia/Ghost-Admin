@@ -139,5 +139,8 @@
       "lib/asset-delivery",
       "lib/koenig-editor"
     ]
+  },
+  "dependencies": {
+    "ember-apollo-client": "^3.0.2"
   }
 }

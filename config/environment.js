@@ -31,6 +31,14 @@ module.exports = function (environment) {
             version: require('../package.json').version.match(/^(\d+\.)?(\d+)/)[0]
         },
 
+        apollo: {
+            apiURL: 'https://vp.lyonel-feininger-gymnasium.de/',
+            // Optionally, set the credentials property of the Fetch Request interface
+            // to control when a cookie is sent:
+            // requestCredentials: 'same-origin', // other choices: 'include', 'omit'
+            //http://api:3000 or ws//:api:3000
+          },
+
         'ember-simple-auth': { },
 
         moment: {
