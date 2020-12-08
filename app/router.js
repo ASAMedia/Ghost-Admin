@@ -12,6 +12,7 @@ Router.map(function () {
 
     this.route('plans.vertretungsplan', {path: '/plans/vertretungsplan'});
     this.route('plans.timetable', {path: '/plans/timetable'});
+    this.route('getplans', { path: '/' });
 
     this.route('setup', function () {
         this.route('one');

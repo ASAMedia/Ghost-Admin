@@ -18,6 +18,7 @@
         <div data-app="true" class="v-application v-application--is-ltr theme--light" id="app">
             <div class="v-application--wrap">
                 <main class="v-content" data-booted="true">
+                    {{ghUserCanloadVp}}
                     <div class="v-content__wrap">
                         <div class="container mt-3 grid-list-xl">
                             <div class="layout column">
@@ -39,6 +40,7 @@
                                                     <div class="v-avatar white--text v-avatar--left primary"
                                                         style="height: 48px; min-width: 48px; width: 48px;">
                                                         Mo
+                                                    
                                                     </div>
                                                     23.11.2020
                                                 </span></span>
@@ -86,7 +88,9 @@
                                                 </thead>
                                                 <tbody>
                                                     <tr>
-                                                        <td>1</td>
+                                                        <td>1{{#each model as |link index|}}
+    {{link-post index=index link=link}}
+  {{/each}}</td>
                                                         <td>5/3?</td>
                                                         <td>Mu</td>
                                                         <td>rw</td>

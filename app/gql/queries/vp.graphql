@@ -1,0 +1,13 @@
+query($plan: ID!, $date: ISODate!) {
+    substitutions(where: { date: $date, plan: { id: $plan } }) {
+        id
+        date
+        class
+        teacher
+        replacement
+        note
+        room
+        period
+        subject
+    }
+}
