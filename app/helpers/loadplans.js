@@ -10,6 +10,7 @@ export default Ember.Helper.extend({
       //this.recompute();
   }),
   compute(params/*, hash*/) {
-    return "5" + this.get('apollo').query({ query, variables:{'plan': 'ck0tg2e3d00000iqj5bk4a6pc','date': '2020-12-07'}}, 'vp').catch(error => alert(error));
+    let data=this.get('apollo').query({ query, variables:{'plan': 'ck0tg2e3d00000iqj5bk4a6pc','date': '2020-12-07'}}, 'vp').catch(error => alert(error));
+    return "6" + data.value;
   }
 });
