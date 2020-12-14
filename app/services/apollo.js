@@ -8,28 +8,25 @@ class OverriddenApollo extends ApolloService {
   session;
 
   link() {
-    let httpLink = super.link()
+    let httpLink = super.link();
 
-    // Middleware
-    let authMiddleware = setContext(async(request, context) => {
-      if (!token) {
-      }
-
-      Object.assign(context.headers, {
-        headers: {
-          authorization: token ? `Bearer ${token}` : null
-        }
-      });
-
-      return context;
+    let authLink = setContext((request, context) => {
+      return this._runAuthorize(request, context);
     });
+    return authLink.concat(httpLink);
+  }
 
-    // Afterware
-    const resetToken = undefined;
-
-    const authFlowLink = authMiddleware.concat(resetToken);
-
-    return authFlowLink.concat(httpLink);
+  _runAuthorize() {
+    if (!this.get('session.isAuthenticated')) {
+      return {};
+    }
+    return new Promise(success => {
+      let headers = {};
+      if (this.get('session.isAuthenticated')) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      success({ headers });
+    });
   }
 }
 export default OverriddenApollo;

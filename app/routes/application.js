@@ -17,6 +17,8 @@ import {
 } from 'ghost-admin/services/ajax';
 import {run} from '@ember/runloop';
 import {inject as service} from '@ember/service';
+import moment from 'moment';
+import 'moment/locale/de' ;
 
 function K() {
     return this;
@@ -38,7 +40,6 @@ export default Route.extend(ApplicationRouteMixin, ShortcutsRoute, {
     tour: service(),
     ui: service(),
     whatsNew: service(),
-
     shortcuts,
 
     routeAfterAuthentication: 'home',
@@ -51,6 +52,7 @@ export default Route.extend(ApplicationRouteMixin, ShortcutsRoute, {
     },
 
     beforeModel() {
+        moment.locale('de');
         return this.config.fetchUnauthenticated();
     },
 

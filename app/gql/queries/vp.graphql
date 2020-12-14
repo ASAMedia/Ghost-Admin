@@ -1,4 +1,4 @@
-query vp($plan: ID!, $date: ISODate!) {
+query vp($plan: ID!, $date: ISODate!, $key: String!) {
     substitutions(where: { date: $date, plan: { id: $plan } }) {
     id
     date
@@ -10,5 +10,10 @@ query vp($plan: ID!, $date: ISODate!) {
     period
     subject
     }
-    
+    note(where: { key: $key }) {
+        id
+        key
+        value
+    }
 }
+

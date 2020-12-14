@@ -1,0 +1,44 @@
+<div class="gh-date-picker">
+    <PowerDatepicker
+        @selected={{this._date}}
+        @center={{this._date}}
+        @onSelect={{action "setDate" value="date"}}
+        @renderInPlace={{true}}
+        @disabled={{this.disabled}} as |dp|
+    >
+        <dp.Trigger @tabindex="-1" data-test-date-picker-datepicker=true>
+           {{!--  <div class="gh-date-time-picker-date {{if this.dateError "error"}} date-select">
+                
+                <input type="text"
+                    placeholder={{this.dateFormat}}
+                    value={{readonly this.dateValue}}
+                    disabled={{this.disabled}}
+                    {{on "input" (fn this.onDateInput dp)}}
+                    {{on "blur" this.onDateBlur}}
+                    {{on "keydown" (fn this.onDateKeydown dp)}}
+                    data-test-date-time-picker-date-input>
+                {{svg-jar "calendar"}}
+            </div> --}}
+            <div class="date-select {{if this.dateError "error"}}"> <span
+                                                class="mx-1 elevation-2 v-chip v-chip--no-color v-chip--pill theme--light v-size--default"
+                                                id="date-select-activator"><span class="v-chip__content">
+                                                    <div class="v-avatar white--text v-avatar--left primary"
+                                                        style="height: 48px; min-width: 48px; width: 48px;">
+                                                        {{readonly this.nameOfDay}}
+                                                    
+                                                    </div>
+                                                    {{readonly this.dateValue}}
+                                                </span></span>
+                                            <div class="v-menu">
+                                                <div role="menu" class="v-menu__content theme--light "
+                                                    style="min-width: 290px; top: 12px; left: 0px; transform-origin: left top 0px; z-index: 0; display: none;">
+                                                </div>
+                                            </div> 
+                                        </div>
+        </dp.Trigger>
+        <dp.Content class="dropdown-menu">
+            <dp.Nav />
+            <dp.Days @minDate={{this._minDate}} @maxDate={{this._maxDate}} @weekdayFormat="min" />
+        </dp.Content>
+    </PowerDatepicker>
+</div>

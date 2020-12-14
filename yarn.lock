@@ -6232,7 +6232,7 @@ ember-cli-mirage@1.1.8:
     lodash-es "^4.17.11"
     miragejs "^0.1.31"
 
-ember-cli-moment-shim@3.8.0, ember-cli-moment-shim@^3.7.1:
+ember-cli-moment-shim@^3.4.0, ember-cli-moment-shim@^3.7.1:
   version "3.8.0"
   resolved "https://registry.yarnpkg.com/ember-cli-moment-shim/-/ember-cli-moment-shim-3.8.0.tgz#dc61bbac9dce4963394e60dd42726d4ba38e2bc1"
   integrity sha512-dN5ImjrjZevEqB7xhwFXaPWwxdKGSFiR1kqy9gDVB+A5EGnhCL1uveKugcyJE/MICVhXUAHBUu6G2LFWEPF2YA==
@@ -6874,7 +6874,7 @@ ember-modifier@^1.0.2:
     ember-compatibility-helpers "^1.2.1"
     ember-modifier-manager-polyfill "^1.2.0"
 
-ember-moment@8.0.1:
+ember-moment@^8.0.1:
   version "8.0.1"
   resolved "https://registry.yarnpkg.com/ember-moment/-/ember-moment-8.0.1.tgz#3a11929efeb7fb6bc5c1cc2c9e4c43bd9c500f80"
   integrity sha512-YmhcMkH4OUwk1ynypxgWb8/O0E+v2HaZ49rk7yPbsf7EkzAyHn2tXrQPbFW4eWCKgHl+VoRoocLU9ShSIDI7qg==
@@ -10544,7 +10544,7 @@ lodash@^3.10.0, lodash@^3.9.3:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
   integrity sha1-W/Rejkm6QYnhfUgnid/RW9FAt7Y=
 
-lodash@^4.11.1, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.12, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.4, lodash@^4.5.1, lodash@~4.17.19, lodash@~4.17.20:
+lodash@^4.11.1, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.12, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.20, lodash@^4.17.4, lodash@^4.5.1, lodash@~4.17.19, lodash@~4.17.20:
   version "4.17.20"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.20.tgz#b44a9b6297bcb698f1c51a3545a2b3b368d59c52"
   integrity sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==
@@ -11099,7 +11099,7 @@ moment-timezone@^0.5.13:
   dependencies:
     moment ">= 2.9.0"
 
-"moment@>= 2.9.0", moment@^2.10.2, moment@^2.19.3:
+"moment@>= 2.9.0", moment@^2.10.2, moment@^2.19.3, moment@^2.29.1:
   version "2.29.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
   integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
