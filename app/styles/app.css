@@ -64,7 +64,8 @@
 @import "layouts/portal-settings.css";
 @import "layouts/billing.css";
 
-
+@import "ember-modal-dialog/ember-modal-structure.css";
+@import "ember-modal-dialog/ember-modal-appearance.css";
 
 /* ---------------------------✈️----------------------------- */
 /* I COMMITTED THIS COMMENT FROM A PLANE: http://bit.ly/2on5pmq

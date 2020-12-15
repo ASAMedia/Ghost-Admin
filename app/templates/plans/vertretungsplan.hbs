@@ -5,8 +5,16 @@
                 Vertretungsplan
             </h2>
             <div data-app="true" class="v-application plans_toolbar" id="app">
-                <LinkTo class="schoolselectorbtn" style={{if @model.isMellingen "font-weight: 900;font-size: large;background-color: rgb(115 115 115 / 15%);border: solid 1px rgb(162 162 162);" ""}} @route="plans.vertretungsplan" @models={{array 'ck0tg2e3d00000iqj5bk4a6pc' (moment-format (now) 'YYYY-MM-DD')}} data-test-nav="vertretungsplan"><span class="v-btn__content">Mellingen</span></LinkTo>
-                <LinkTo class="schoolselectorbtn" style={{if @model.isMellingen "" "font-weight: 900;font-size: large;background-color: rgb(115 115 115 / 15%);border: solid 1px rgb(162 162 162);"}} @route="plans.vertretungsplan" @models={{array 'ck0tg2ie400010iqjfp4pe4cx' (moment-format (now) 'YYYY-MM-DD')}} data-test-nav="vertretungsplan"><span class="v-btn__content">Buttelstedt</span></LinkTo>
+                <LinkTo class="schoolselectorbtn"
+                    style={{if @model.isMellingen "font-weight: 900;font-size: large;background-color: rgb(115 115 115 / 15%);border: solid 1px rgb(162 162 162);" ""}}
+                    @route="plans.vertretungsplan"
+                    @models={{array 'ck0tg2e3d00000iqj5bk4a6pc' (moment-format (now) 'YYYY-MM-DD')}}
+                    data-test-nav="vertretungsplan"><span class="v-btn__content">Mellingen</span></LinkTo>
+                <LinkTo class="schoolselectorbtn"
+                    style={{if @model.isMellingen "" "font-weight: 900;font-size: large;background-color: rgb(115 115 115 / 15%);border: solid 1px rgb(162 162 162);"}}
+                    @route="plans.vertretungsplan"
+                    @models={{array 'ck0tg2ie400010iqjfp4pe4cx' (moment-format (now) 'YYYY-MM-DD')}}
+                    data-test-nav="vertretungsplan"><span class="v-btn__content">Buttelstedt</span></LinkTo>
             </div>
         </GhCanvasHeader>
 
@@ -21,47 +29,44 @@
                                     class="v-sheet v-sheet--tile theme--light v-toolbar v-toolbar--flat transparent">
                                     <div class="v-toolbar__content" style="height: 64px;">
                                         <a {{action "prevVp"}}
-                                                class="v-btn v-btn--flat v-btn--icon v-btn--round v-btn--router theme--light v-size--small"><span
-                                                    class="v-btn__content"><svg xmlns="http://www.w3.org/2000/svg"
-                                                        viewBox="0 0 24 24" height="24" width="24" role="img"
-                                                        aria-hidden="true"
-                                                        class="v-icon notranslate v-icon--svg theme--light">
-                                                        <path
-                                                            d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z">
-                                                        </path>
-                                                    </svg></span></a>
-                                        <GhDatePicker
-                                            @date={{@model.date}}
-                                            @setDate={{action "reloadSite"}}
-                                        />
+                                            class="v-btn v-btn--flat v-btn--icon v-btn--round v-btn--router theme--light v-size--small"><span
+                                                class="v-btn__content"><svg xmlns="http://www.w3.org/2000/svg"
+                                                    viewBox="0 0 24 24" height="24" width="24" role="img"
+                                                    aria-hidden="true"
+                                                    class="v-icon notranslate v-icon--svg theme--light">
+                                                    <path
+                                                        d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z">
+                                                    </path>
+                                                </svg></span></a>
+                                        <GhDatePicker @date={{@model.date}} @setDate={{action "reloadSite"}} />
                                         <a {{action "nextVp"}}
-                                                class="v-btn v-btn--flat v-btn--icon v-btn--round v-btn--router theme--light v-size--small"><span
-                                                    class="v-btn__content"><svg xmlns="http://www.w3.org/2000/svg"
-                                                        viewBox="0 0 24 24" height="24" width="24" role="img"
-                                                        aria-hidden="true"
-                                                        class="v-icon notranslate v-icon--svg theme--light">
-                                                        <path
-                                                            d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z">
-                                                        </path>
-                                                    </svg></span></a>
-                                        <div class="spacer"></div> 
+                                            class="v-btn v-btn--flat v-btn--icon v-btn--round v-btn--router theme--light v-size--small"><span
+                                                class="v-btn__content"><svg xmlns="http://www.w3.org/2000/svg"
+                                                    viewBox="0 0 24 24" height="24" width="24" role="img"
+                                                    aria-hidden="true"
+                                                    class="v-icon notranslate v-icon--svg theme--light">
+                                                    <path
+                                                        d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z">
+                                                    </path>
+                                                </svg></span></a>
+                                        <div class="spacer"></div>
                                         <div class="export-dropdown">
-                                        <button type="button" 
-                                            class="mr-4 v-btn v-btn--contained v-btn--rounded theme--light v-size--default"><span
-                                                class="v-btn__content">
-                                                Exportieren
-                                            </span></button>
+                                            <button type="button"
+                                                class="mr-4 v-btn v-btn--contained v-btn--rounded theme--light v-size--default"><span
+                                                    class="v-btn__content">
+                                                    Exportieren
+                                                </span></button>
                                             <div class="export-dropdown-content">
                                                 {{#each @model.fileFormats as |Formats|}}
-                                                            <a {{action "openExportDialog" Formats}}>{{Formats.description}}</a>
+                                                <a {{action "openExportDialog" Formats}}>{{Formats.description}}</a>
                                                 {{/each}}
-                                        </div> 
+                                            </div>
                                         </div>
                                         <button type="button"
-                                        class="v-btn v-btn--contained v-btn--rounded theme--light v-size--default primary"><span
-                                            class="v-btn__content">
-                                            Erstellen
-                                        </span></button>
+                                            class="v-btn v-btn--contained v-btn--rounded theme--light v-size--default primary"><span
+                                                class="v-btn__content">
+                                                Erstellen
+                                            </span></button>
                                     </div>
                                 </header>
                                 <div class="flex">
@@ -71,7 +76,7 @@
                                                 <thead class="font-weight-medium">
                                                     <tr>
                                                         {{#each @model.headers as |header|}}
-                                                            <td>{{header.text}}</td>
+                                                        <td>{{header.text}}</td>
                                                         {{/each}}
                                                         <td></td>
                                                     </tr>
@@ -79,16 +84,46 @@
                                                 <tbody>
                                                     {{#each @model.substitutions as |item|}}
                                                     <tr>
-                                                    <td>{{ item.period }}</td>
-                                                    <td>{{ item.class }}</td>
-                                                    <td>{{ item.subject }}</td>
-                                                    <td>{{ item.teacher }}</td>
-                                                    <td>{{ item.replacement }}</td>
-                                                    <td>{{ item.room }}</td>
-                                                    <td>{{ item.note }}</td>
-                                                    <td class="text-right">
-                                                        
-                                                    </td>
+                                                        <td>{{ item.period }}</td>
+                                                        <td>{{ item.class }}</td>
+                                                        <td>{{ item.subject }}</td>
+                                                        <td>{{ item.teacher }}</td>
+                                                        <td>{{ item.replacement }}</td>
+                                                        <td>{{ item.room }}</td>
+                                                        <td>{{ item.note }}</td>
+                                                        <td class="text-right">
+                                                            <button
+                                                                class="v-btn v-btn--flat v-btn--icon v-btn--round theme--light v-size--default"
+                                                                {{action "toggleDisplay" item}}>
+                                                                <span class="v-btn__content">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                                        viewBox="0 0 24 24" height="16px" width="16px"
+                                                                        role="img" aria-hidden="true"
+                                                                        class="v-icon notranslate v-icon--svg theme--light"
+                                                                        style="font-size: 16px; height: 16px; width: 16px;">
+                                                                        <path
+                                                                            d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z">
+                                                                        </path>
+                                                                    </svg>
+                                                                </span>
+                                                            </button>
+                                                            <button
+                                                                class="v-btn v-btn--flat v-btn--icon v-btn--round theme--light v-size--default"
+                                                                {{action "deleteSubstitution" item}}>
+                                                                <span class="v-btn__content">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                                        viewBox="0 0 24 24" height="16px" width="16px"
+                                                                        role="img" aria-hidden="true"
+                                                                        class="v-icon notranslate v-icon--svg theme--light"
+                                                                        style="font-size: 16px; height: 16px; width: 16px;">
+                                                                        <path
+                                                                            d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z">
+                                                                        </path>
+                                                                    </svg>
+                                                                </span>
+                                                            </button>
+                                                        </td>
+
                                                     </tr>
                                                     {{/each}}
                                                 </tbody>
@@ -96,6 +131,7 @@
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="flex">
                                     <div class="layout row">
                                         <div class="flex xs12 md4">
@@ -177,5 +213,162 @@
             </div>
         </div>
     </div>
+    {{#if showSubstitutionCard}}
+    <div tabindex="0" class="ghEditSubstitutionCard v-dialog__content v-dialog__content--active">
+        <div class="v-dialog vuedl-layout v-dialog--active" style="max-width: 450px;">
+            <div class="px-4 py-3 v-card v-sheet theme--light">
+                <div class="v-card__title">Eintrag bearbeiten</div>
+                <div class="v-card__text">
+                    <div class="container container--fluid grid-list-xl" style="padding: 0px;">
+                        <div class="layout wrap">
+                            <div class="flex xs12 md4">
+                                <div
+                                    class="v-input v-input--hide-details   v-input--is-dirty theme--light v-text-field v-text-field--is-booted v-text-field--enclosed v-text-field--outlined">
+                                    <div class="v-input__control">
+                                        <div class="v-input__slot">
+                                            <fieldset aria-hidden="true">
+                                                <legend style="width: 0px;"><span>&#8203;</span></legend>
+                                            </fieldset>
+                                            <div class="v-text-field__slot"><label for="input-204"
+                                                    class="v-label   theme--light"
+                                                    style="left: 0px; right: auto; position: absolute;">Stunde</label>
+                                                    {{input id="input-204" type="text" value=itemToEditPeriod}}
+                                                    </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex xs12 md4">
+                                <div
+                                    class="v-input v-input--hide-details   v-input--is-dirty theme--light v-text-field v-text-field--is-booted v-text-field--enclosed v-text-field--outlined">
+                                    <div class="v-input__control">
+                                        <div class="v-input__slot">
+                                            <fieldset aria-hidden="true">
+                                                <legend style="width: 0px;"><span>&#8203;</span></legend>
+                                            </fieldset>
+                                            <div class="v-text-field__slot"><label for="input-205"
+                                                    class="v-label   theme--light"
+                                                    style="left: 0px; right: auto; position: absolute;">Klasse</label>
+                                                    {{input id="input-205" type="text" value=itemToEditClass}}
+                                                    </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex xs12 md4">
+                                <div
+                                    class="v-input v-input--hide-details theme--light v-text-field v-text-field--is-booted v-text-field--enclosed v-text-field--outlined">
+                                    <div class="v-input__control">
+                                        <div class="v-input__slot">
+                                            <fieldset aria-hidden="true">
+                                                <legend style="width: 0px;"><span>&#8203;</span></legend>
+                                            </fieldset>
+                                            <div class="v-text-field__slot"><label for="input-206"
+                                                    class="v-label theme--light"
+                                                    style="left: 0px; right: auto; position: absolute;">Fach</label>
+                                                    {{input id="input-206" type="text" value=itemToEditSubject}}
+                                                    </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex xs12 md4">
+                                <div
+                                    class="v-input v-input--hide-details theme--light v-text-field v-text-field--is-booted v-text-field--enclosed v-text-field--outlined">
+                                    <div class="v-input__control">
+                                        <div class="v-input__slot">
+                                            <fieldset aria-hidden="true">
+                                                <legend style="width: 0px;"><span>&#8203;</span></legend>
+                                            </fieldset>
+                                            <div class="v-text-field__slot"><label for="input-207"
+                                                    class="v-label theme--light"
+                                                    style="left: 0px; right: auto; position: absolute;">Lehrer</label>
+                                                    {{input id="input-207" type="text" value=itemToEditTeacher}}
+                                                   </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex xs12 md4">
+                                <div
+                                    class="v-input v-input--hide-details theme--light v-text-field v-text-field--is-booted v-text-field--enclosed v-text-field--outlined">
+                                    <div class="v-input__control">
+                                        <div class="v-input__slot">
+                                            <fieldset aria-hidden="true">
+                                                <legend style="width: 0px;"><span>&#8203;</span></legend>
+                                            </fieldset>
+                                            <div class="v-text-field__slot"><label for="input-208"
+                                                    class="v-label theme--light"
+                                                    style="left: 0px; right: auto; position: absolute;">Fach</label>
+                                                    {{input id="input-208" type="text" value=itemToEditReplacement}}
+                                                   </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex xs12 md4">
+                                <div
+                                    class="v-input v-input--hide-details   v-input--is-dirty theme--light v-text-field v-text-field--is-booted v-text-field--enclosed v-text-field--outlined">
+                                    <div class="v-input__control">
+                                        <div class="v-input__slot">
+                                            <fieldset aria-hidden="true">
+                                                <legend style="width: 0px;"><span>&#8203;</span></legend>
+                                            </fieldset>
+                                            <div class="v-text-field__slot"><label for="input-209"
+                                                    class="v-label   theme--light"
+                                                    style="left: 0px; right: auto; position: absolute;">Raum</label>
+                                                    {{input id="input-209" type="text" value=itemToEditRoom}}
+                                                   </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex xs12">
+                                <div
+                                    class="v-input v-input--hide-details   v-input--is-dirty theme--light v-text-field v-text-field--is-booted v-text-field--enclosed v-text-field--outlined">
+                                    <div class="v-input__control">
+                                        <div class="v-input__slot">
+                                            <fieldset aria-hidden="true">
+                                                <legend style="width: 0px;"><span>&#8203;</span></legend>
+                                            </fieldset>
+                                            <div class="v-text-field__slot"><label for="input-210"
+                                                    class="v-label   theme--light"
+                                                    style="left: 0px; right: auto; position: absolute;">Bemerkung</label>
+                                                    {{input id="input-210" type="text" value=itemToEditNote}}
+                                                    </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="v-card__actions">
+                    <div class="spacer"></div>
+                    <button type="button" {{action "toggleDisplay"}}
+                        class="v-btn v-btn--flat v-btn--text theme--light v-size--default primary--text"><span
+                            class="v-btn__content">Abbrechen</span></button>
+                    <button {{action "editSubstitution"}} type="button"
+                        class="v-btn v-btn--flat v-btn--text theme--light v-size--default primary--text"><a
+                            class="v-btn__content">Speichern</a></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/if}}
+    {{#if isShowingeditSubstitutionModal}}
+    {{#modal-dialog
+        onClose=(action "toggleeditSubstitutionModal")
+        targetAttachment="center"
+        translucentOverlay=true
+    }}
+
+  <h3>Eintrag erfolgreich gespeichert.</h3>
+  <p>Änderungen wurden in die Datenbank geschrieben.</p>
+  <div><button class="v-btn" style="margin: auto;display: flex;" {{action 'toggleeditSubstitutionModal'}}>OK</button></div>
+
+        
+    {{/modal-dialog}}
+    {{/if}}
 </section>
 {{outlet}}

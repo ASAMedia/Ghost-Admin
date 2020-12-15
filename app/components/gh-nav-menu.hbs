@@ -33,8 +33,8 @@
         <ul class="gh-nav-list">
             <li class="gh-nav-list-h">Pläne</li>
             <li class="relative">
-                <LinkTo @route="plans.vertretungsplan" @models={{array 'ck0tg2e3d00000iqj5bk4a6pc' (moment-format (now) 'YYYY-MM-DD')}} data-test-nav="vertretungsplan">{{svg-jar "vertretungsplan"}}Vertretungsplan</LinkTo>
-                <LinkTo @route="plans.timetable" data-test-nav="timetable">{{svg-jar "calendar"}}Stundenpläne</LinkTo>
+                <LinkTo id="plansVpBtn" @route="plans.vertretungsplan" @models={{array 'ck0tg2e3d00000iqj5bk4a6pc' (moment-format (now) 'YYYY-MM-DD')}} data-test-nav="vertretungsplan" @current-when={{this.isOnVpSite}}>{{svg-jar "vertretungsplan"}}Vertretungsplan</LinkTo>
+                <LinkTo id="plansTimetableBtn" @route="plans.timetable" data-test-nav="timetable">{{svg-jar "calendar"}}Stundenpläne</LinkTo>
             </li>
         </ul>
         {{/if}}

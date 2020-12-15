@@ -1,7 +1,0 @@
-query($key: String!) {
-    note(where: { key: $key }) {
-        id
-        key
-        value
-    }
-}

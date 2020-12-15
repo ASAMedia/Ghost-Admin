@@ -20,7 +20,7 @@ export default AuthenticatedRoute.extend(CurrentUserSettings, {
     },
     
     async model(params) {
-        let apollo = this.get('apollo');
+        let apollo = this.apollo;
         let plan=params.location;
         let isMellingen=(plan=='ck0tg2e3d00000iqj5bk4a6pc' ? true : false);
         let date=params.date;

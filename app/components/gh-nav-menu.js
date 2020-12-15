@@ -34,6 +34,7 @@ export default Component.extend(ShortcutsMixin, {
     // HACK: {{link-to}} should be doing this automatically but there appears to
     // be a bug in Ember that's preventing it from working immediately after login
     isOnSite: equal('router.currentRouteName', 'site'),
+    isOnVpSite: match('router.currentRouteName', /^plans.vertretungsplan/),
 
     showTagsNavigation: or('session.user.isOwnerOrAdmin', 'session.user.isEditor'),
     showMenuExtension: and('config.clientExtensions.menu', 'session.user.isOwner'),
@@ -43,7 +44,6 @@ export default Component.extend(ShortcutsMixin, {
 
     init() {
         this._super(...arguments);
-
         let shortcuts = {};
 
         shortcuts[`${ctrlOrCmd}+k`] = {action: 'toggleSearchModal'};

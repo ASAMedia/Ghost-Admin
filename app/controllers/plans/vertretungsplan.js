@@ -9,6 +9,7 @@ import {
 import {computed} from '@ember/object';
 import {inject as service} from '@ember/service';
 import {task} from 'ember-concurrency';
+import mutation from 'ghost-admin/gql/queries/vpEdit.graphql';;
 
 const ICON_EXTENSIONS = ['ico', 'png'];
 
@@ -27,6 +28,7 @@ export default Controller.extend({
     settings: service(),
     ui: service(),
     router: service(),
+    apollo: service(),
 
     availableTimezones: null,
     iconExtensions: null,
@@ -35,76 +37,151 @@ export default Controller.extend({
     imageMimeTypes: IMAGE_MIME_TYPES,
     _scratchFacebook: null,
     _scratchTwitter: null,
-
+    showSubstitutionCard: false,
+    url: '',
+    params: '',
+    date: '',
+    plan: '',
+    isMell: '',
     init() {
         this._super(...arguments);
         this.iconExtensions = ICON_EXTENSIONS;
+        const url=window.location.href;
+        const parameter=url.split('/');
+        this.set('url',url);
+        this.set('params',parameter);
+        this.set('date',parameter[parameter.length-1]);
+        this.set('plan',parameter[parameter.length-2]);
+        this.set('isMell',(this.plan=='ck0tg2e3d00000iqj5bk4a6pc' ? true :false ));
     },
-
+    
     privateRSSUrl: computed('config.blogUrl', 'settings.publicHash', function () {
         let blogUrl = this.get('config.blogUrl');
         let publicHash = this.get('settings.publicHash');
 
         return `${blogUrl}/${publicHash}/rss`;
     }),
-
+    getUrlParams(){
+        return this.params;
+    },
     actions: {
         reloadSite(date) {
-            let dateString = moment(date).format('YYYY-MM-DD');            
-            let url = window.location.href;
+            const dateString = moment(date).format('YYYY-MM-DD');            
+            let url = this.url;
             url=url.slice(url.lastIndexOf('#')+1,url.lastIndexOf('/'));
             this.transitionToRoute(`${url}/${dateString}`);
         },
         nextVp() {          
-            let url = window.location.href;
-            let dateString=url.slice(url.lastIndexOf('/')+1);
+            let url = this.url;
             url=url.slice(url.lastIndexOf('#')+1,url.lastIndexOf('/'));
-            dateString = moment(dateString).add(1,'days').format('YYYY-MM-DD');    
+            const dateString = moment(this.date).add(1,'days').format('YYYY-MM-DD');    
             this.transitionToRoute(`${url}/${dateString}`);
         },
         prevVp() {          
-            let url = window.location.href;
-            let dateString=url.slice(url.lastIndexOf('/')+1);
+            let url = this.url;
             url=url.slice(url.lastIndexOf('#')+1,url.lastIndexOf('/'));
-            dateString = moment(dateString).subtract(1,'days').format('YYYY-MM-DD');    
+            const dateString = moment(this.date).subtract(1,'days').format('YYYY-MM-DD');    
             this.transitionToRoute(`${url}/${dateString}`);
         },
         async openExportDialog(fileFormat){
-            let params = window.location.href.split('/');
-            let date=params[params.length-1];
-            let plan=params[params.length-2];
             //`${this.$env.EXPORTER_ENDPOINT}/?plan=${this.plan}&date=${this.date}&type=${this.fileFormat!.key}`
-            let response = await fetch(`https://vp.lyonel-feininger-gymnasium.de/export/?plan=${plan}&date=${date}&type=${fileFormat.key}`, {
+            let response = await fetch(`https://vp.lyonel-feininger-gymnasium.de/export/?plan=${this.plan}&date=${this.date}&type=${fileFormat.key}`, {
                 method: "post",
               });
             let array=await response.arrayBuffer();
             var file = new Blob([array], { type: fileFormat.mime });
             var fileURL = URL.createObjectURL(file);
             if (window.navigator && window.navigator.msSaveOrOpenBlob) {
-                window.navigator.msSaveOrOpenBlob(fileURL,(plan=='ck0tg2e3d00000iqj5bk4a6pc' ?  `Mellingen-${date}` : `Buttelstedt-${date}`));
+                window.navigator.msSaveOrOpenBlob(fileURL,(this.isMell ?  `Mellingen-${this.date}` : `Buttelstedt-${this.date}`));
             }else{
                 var a = document.createElement("a");
                 document.body.appendChild(a);
                 a.style = "display: none";
                 a.href = fileURL;
                 a.target = '_blank';
-                a.download = (plan=='ck0tg2e3d00000iqj5bk4a6pc' ?  `Mellingen-${date}.${fileFormat.key}` : `Buttelstedt-${date}.${fileFormat.key}`);
+                a.download = (this.isMell ?  `Mellingen-${this.date}.${fileFormat.key}` : `Buttelstedt-${this.date}.${fileFormat.key}`);
                 a.click();
                 a.remove();
                 window.URL.revokeObjectURL(fileURL);
             }
         },
+        itemToEditPeriod:'',
+        itemToEditClass:'',
+        itemToEditSubject:'',
+        itemToEditTeacher:'',
+        itemToEditReplacement:'',
+        itemToEditRoom:'',
+        itemToEditNote:'',
+        itemToEditId:'',
 
-        setTimezone(timezone) {
-            
-            this.set('settings.timezone', timezone.name);
+        toggleDisplay(item) {
+            if (item!=undefined){
+                this.set('itemToEditPeriod',item.period)
+                this.set('itemToEditClass',item.class)
+                this.set('itemToEditSubject',item.subject)
+                this.set('itemToEditTeacher',item.teacher)
+                this.set('itemToEditReplacement',item.replacement)
+                this.set('itemToEditRoom',item.room)
+                this.set('itemToEditNote',item.note)
+                this.set('itemToEditId',item.id)
+            }
+            this.toggleProperty('showSubstitutionCard');
         },
 
-        removeImage(image) {
-            // setting `null` here will error as the server treats it as "null"
-            this.settings.set(image, '');
+        isShowingeditSubstitutionModal: false,
+        async editSubstitution() {
+            const itemToMutate = [
+                {period:this.itemToEditPeriod},
+                {class:this.itemToEditClass},
+                {subject:this.itemToEditSubject},
+                {teacher:this.itemToEditTeacher},
+                {replacement:this.itemToEditReplacement},
+                {room:this.itemToEditRoom},
+                {note:this.itemToEditNote},
+                {id: this.itemToEditId}
+            ];
+            let variables = {id: itemToMutate.id,
+                data: {
+                class: itemToMutate.class,
+                teacher: itemToMutate.teacher,
+                replacement: itemToMutate.replacement,
+                room: itemToMutate.room,
+                period: itemToMutate.period,
+                subject: itemToMutate.subject,
+                note: itemToMutate.note
+            }};
+            let data = await this.apollo.mutate({ mutation, variables},'updateSubstitution').catch(error => alert(error));
+            this.toggleProperty('showSubstitutionCard');
+            this.toggleProperty('isShowingeditSubstitutionModal');
         },
-
+        toggleeditSubstitutionModal() {
+            this.toggleProperty('isShowingeditSubstitutionModal');
+          },
+          async deleteSubstitution(item) {
+            const dialog = await this.$dialog.show(ConfirmCard, {
+              title: 'Eintrag löschen',
+              text: `Möchten Sie diesen Eintrag wirklich löschen?`,
+            });
+            const result = await dialog.wait();
+      
+            if(!result) {
+              return;
+            }
+      
+            await this.$apollo.mutate({
+              mutation: gql`
+                mutation($id: ID!) {
+                  deleteSubstitution(where: { id: $id }) {
+                    id
+                  }
+                }
+              `,
+              variables: { id: item.id }
+            });
+      
+            this.$dialog.message.success('Eintrag erfolgreich gelöscht.');
+          },
+      
         /**
          * Opens a file selection dialog - Triggered by "Upload Image" buttons,
          * searches for the hidden file input within the .gh-setting element

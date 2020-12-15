@@ -7,18 +7,6 @@
         @disabled={{this.disabled}} as |dp|
     >
         <dp.Trigger @tabindex="-1" data-test-date-picker-datepicker=true>
-           {{!--  <div class="gh-date-time-picker-date {{if this.dateError "error"}} date-select">
-                
-                <input type="text"
-                    placeholder={{this.dateFormat}}
-                    value={{readonly this.dateValue}}
-                    disabled={{this.disabled}}
-                    {{on "input" (fn this.onDateInput dp)}}
-                    {{on "blur" this.onDateBlur}}
-                    {{on "keydown" (fn this.onDateKeydown dp)}}
-                    data-test-date-time-picker-date-input>
-                {{svg-jar "calendar"}}
-            </div> --}}
             <div class="date-select {{if this.dateError "error"}}"> <span
                                                 class="mx-1 elevation-2 v-chip v-chip--no-color v-chip--pill theme--light v-size--default"
                                                 id="date-select-activator"><span class="v-chip__content">

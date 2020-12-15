@@ -35,7 +35,7 @@ module.exports = function (environment) {
             apiURL: 'https://vp.lyonel-feininger-gymnasium.de/api/',
             // Optionally, set the credentials property of the Fetch Request interface
             // to control when a cookie is sent:
-            requestCredentials: 'include', // other choices: 'same-origin', 'omit'
+            //requestCredentials: 'include', // other choices: 'same-origin', 'omit'
             //http://api:3000 or ws//:api:3000
           },
 
