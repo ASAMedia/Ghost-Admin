@@ -9,7 +9,8 @@ import {
 import {computed} from '@ember/object';
 import {inject as service} from '@ember/service';
 import {task} from 'ember-concurrency';
-import mutation from 'ghost-admin/gql/queries/vpEdit.graphql';;
+import mutation from 'ghost-admin/gql/queries/vpEdit.graphql';
+import gql from "graphql-tag";
 
 const ICON_EXTENSIONS = ['ico', 'png'];
 
@@ -38,6 +39,8 @@ export default Controller.extend({
     _scratchFacebook: null,
     _scratchTwitter: null,
     showSubstitutionCard: false,
+    isCreatingSubstitution: false,
+    showNoteCard: false,
     url: '',
     params: '',
     date: '',
@@ -105,6 +108,8 @@ export default Controller.extend({
                 window.URL.revokeObjectURL(fileURL);
             }
         },
+
+        /**Actions for Substitutions */
         itemToEditPeriod:'',
         itemToEditClass:'',
         itemToEditSubject:'',
@@ -125,63 +130,157 @@ export default Controller.extend({
                 this.set('itemToEditNote',item.note)
                 this.set('itemToEditId',item.id)
             }
+            else{
+                this.set('itemToEditPeriod','')
+                this.set('itemToEditClass','')
+                this.set('itemToEditSubject','')
+                this.set('itemToEditTeacher','')
+                this.set('itemToEditReplacement','')
+                this.set('itemToEditRoom','')
+                this.set('itemToEditNote','')
+                this.set('itemToEditId','')
+                this.toggleProperty('isCreatingSubstitution');
+            }
             this.toggleProperty('showSubstitutionCard');
         },
 
         isShowingeditSubstitutionModal: false,
         async editSubstitution() {
-            const itemToMutate = [
-                {period:this.itemToEditPeriod},
-                {class:this.itemToEditClass},
-                {subject:this.itemToEditSubject},
-                {teacher:this.itemToEditTeacher},
-                {replacement:this.itemToEditReplacement},
-                {room:this.itemToEditRoom},
-                {note:this.itemToEditNote},
-                {id: this.itemToEditId}
-            ];
-            let variables = {id: itemToMutate.id,
-                data: {
-                class: itemToMutate.class,
-                teacher: itemToMutate.teacher,
-                replacement: itemToMutate.replacement,
-                room: itemToMutate.room,
-                period: itemToMutate.period,
-                subject: itemToMutate.subject,
-                note: itemToMutate.note
-            }};
-            let data = await this.apollo.mutate({ mutation, variables},'updateSubstitution').catch(error => alert(error));
+            const itemToMutate = {
+                period: this.itemToEditPeriod,
+                class:this.itemToEditClass,
+                subject:this.itemToEditSubject,
+                teacher:this.itemToEditTeacher,
+                replacement:this.itemToEditReplacement,
+                room:this.itemToEditRoom,
+                note:this.itemToEditNote,
+                id: this.itemToEditId
+            };
+
+            if(this.isCreatingSubstitution){
+                this.toggleProperty('isCreatingSubstitution');
+                const variables = {
+                    data: { 
+                        plan: { id: this.plan },
+                        date: this.date,
+                        class: itemToMutate.class,
+                        teacher: itemToMutate.teacher,
+                        replacement: itemToMutate.replacement,
+                        room: itemToMutate.room,
+                        period: itemToMutate.period,
+                        subject: itemToMutate.subject,
+                        note: itemToMutate.note
+                      }};
+                const data = await this.apollo.mutate({
+                    mutation: gql`
+                      mutation($data: SubstitutionCreateInput!) {
+                        createSubstitution(data: $data) {
+                          id
+                          date
+                          class
+                          teacher
+                          replacement
+                          note
+                          room
+                          period
+                          subject
+                        }
+                      }
+                    `,
+                    variables
+                  }).catch(error => alert(error));            
+                
+            }
+            else{
+                const variables = {id: itemToMutate.id,
+                    data: {
+                    class: itemToMutate.class,
+                    teacher: itemToMutate.teacher,
+                    replacement: itemToMutate.replacement,
+                    room: itemToMutate.room,
+                    period: itemToMutate.period,
+                    subject: itemToMutate.subject,
+                    note: itemToMutate.note
+                }};
+                let data = await this.apollo.mutate({ mutation, variables},'updateSubstitution').catch(error => alert(error));
+            }
             this.toggleProperty('showSubstitutionCard');
             this.toggleProperty('isShowingeditSubstitutionModal');
         },
         toggleeditSubstitutionModal() {
             this.toggleProperty('isShowingeditSubstitutionModal');
           },
-          async deleteSubstitution(item) {
-            const dialog = await this.$dialog.show(ConfirmCard, {
-              title: 'Eintrag löschen',
-              text: `Möchten Sie diesen Eintrag wirklich löschen?`,
-            });
-            const result = await dialog.wait();
-      
-            if(!result) {
-              return;
-            }
-      
-            await this.$apollo.mutate({
-              mutation: gql`
-                mutation($id: ID!) {
-                  deleteSubstitution(where: { id: $id }) {
-                    id
-                  }
+          isShowingDeleteSubstitutionModal: false,
+          deleteItem:'',
+          toggledelteSubstitutionModal(item) {
+            this.toggleProperty('isShowingDeleteSubstitutionModal');
+            this.set('deleteItem',item);
+          },
+
+        async deleteSubstitution() {
+            const query = gql`
+            mutation($id: ID!) {
+                deleteSubstitution(where: { id: $id }) {
+                id
                 }
-              `,
-              variables: { id: item.id }
-            });
+            }
+            `;
+            const variables = { id: this.deleteItem.id };
+            await this.apollo.mutate({mutation: query, variables}).catch(error => alert(error));
+            this.toggleProperty('isShowingDeleteSubstitutionModal');
+            this.toggleProperty('isShowingDeleteConfirmModal');
+        },
+        isShowingDeleteConfirmModal: false,
+        toggledelteSubstitutionConfirmModal() {
+            this.toggleProperty('isShowingDeleteConfirmModal');
+          },
+          
       
-            this.$dialog.message.success('Eintrag erfolgreich gelöscht.');
+          /**Actions for NoteCard */
+          itemNoteToEdit:'',
+          toggleNoteDisplay(item, type) {
+            if (item!=undefined){
+                if(type==='abwesend'){
+                    this.set('itemNoteToEdit', ((item.abwesend != null) ? item.abwesend.value : ' '));
+                }
+                else if(type==='av'){
+                    this.set('itemNoteToEdit',((item.av != null) ? item.av.value : ' '));
+                }
+                else if(type==='information'){
+                    this.set('itemNoteToEdit',((item.information != null) ? item.information.value : ' '));
+                }
+            }
+            this.toggleProperty('showNoteCard');
+        },
+
+        isShowingEditNoteModal: false,
+        async editNote() {
+            this.toggleProperty('showNoteCard');
+            this.toggleProperty('isShowingEditNoteModal');
+            const variables = {
+                data: {
+                    key: this.plan,
+                    value: this.itemNoteToEdit
+                  }
+            };
+            const query = gql`
+            mutation($data: NoteCreateInput!) {
+                createNote(data: $data) {
+                  id
+                  key
+                  value
+                }
+              }
+            `;
+            let data = await this.apollo.mutate({mutation: query , variables},'createNote').catch(error => alert(error));
+            this.toggleProperty('showNoteCard');
+            this.toggleProperty('isShowingEditNoteModal');
+        },
+        toggleeditNoteModal() {
+            this.toggleProperty('isShowingEditNoteModal');
           },
       
+
         /**
          * Opens a file selection dialog - Triggered by "Upload Image" buttons,
          * searches for the hidden file input within the .gh-setting element

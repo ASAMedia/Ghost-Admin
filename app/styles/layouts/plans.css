@@ -284,6 +284,8 @@
 .v-input .v-label{height:20px;line-height:20px;}
 .v-input__control{display:flex;flex-direction:column;height:auto;flex-grow:1;flex-wrap:wrap;width:100%;}
 .v-input__slot{align-items:center;color:inherit;display:flex;margin-bottom:8px;min-height:inherit;position:relative;transition:0.3s cubic-bezier(0.25, 0.8, 0.5, 1);width:100%;}
+.noteCrad fieldset{ border: none;}
+.noteCrad .v-text-field__slot textarea{padding: 5px;}
 .v-input--hide-details > .v-input__control > .v-input__slot{margin-bottom:0;}
 .theme--light.v-label{color:rgba(0, 0, 0, 0.54);}
 .v-label{font-size:16px;line-height:1;min-height:8px; max-width:133%; background-color: white; transform:translateY(-25px) scale(0.75);}

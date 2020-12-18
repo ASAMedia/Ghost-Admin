@@ -11,3 +11,4 @@ mutation($id: ID!, $data: SubstitutionUpdateInput!) {
                     subject
                     }
                 }
+                

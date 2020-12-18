@@ -62,7 +62,7 @@
                                                 {{/each}}
                                             </div>
                                         </div>
-                                        <button type="button"
+                                        <button type="button" {{action "toggleDisplay"}}
                                             class="v-btn v-btn--contained v-btn--rounded theme--light v-size--default primary"><span
                                                 class="v-btn__content">
                                                 Erstellen
@@ -109,7 +109,7 @@
                                                             </button>
                                                             <button
                                                                 class="v-btn v-btn--flat v-btn--icon v-btn--round theme--light v-size--default"
-                                                                {{action "deleteSubstitution" item}}>
+                                                                {{action "toggledelteSubstitutionModal" item}}>
                                                                 <span class="v-btn__content">
                                                                     <svg xmlns="http://www.w3.org/2000/svg"
                                                                         viewBox="0 0 24 24" height="16px" width="16px"
@@ -138,7 +138,7 @@
                                             <div class="elevation-1 v-card v-sheet theme--light">
                                                 <div class="v-card__title">
                                                     Abwesende Lehrer
-                                                    <div class="spacer"></div> <button type="button"
+                                                    <div class="spacer"></div> <button type="button" {{action "toggleNoteDisplay" @model 'abwesend'}}
                                                         class="v-btn v-btn--flat v-btn--icon v-btn--round theme--light v-size--default"><span
                                                             class="v-btn__content"><svg
                                                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
@@ -147,16 +147,7 @@
                                                                 <path
                                                                     d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z">
                                                                 </path>
-                                                            </svg></span></button> <button type="button"
-                                                        class="v-btn v-btn--flat v-btn--icon v-btn--round theme--light v-size--default"><span
-                                                            class="v-btn__content"><svg
-                                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                                                                height="24" width="24" role="img" aria-hidden="true"
-                                                                class="v-icon notranslate v-icon--svg theme--light">
-                                                                <path
-                                                                    d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z">
-                                                                </path>
-                                                            </svg></span></button></div>
+                                                            </svg></span></button> </div>
                                                 <div class="v-card__text">{{@model.abwesend.value}}</div>
                                             </div>
                                         </div>
@@ -164,13 +155,14 @@
                                             <div class="elevation-1 v-card v-sheet theme--light">
                                                 <div class="v-card__title">
                                                     AV
-                                                    <div class="spacer"></div> <button type="button"
+                                                    <div class="spacer"></div> <button type="button" {{action "toggleNoteDisplay" @model 'av'}}
                                                         class="v-btn v-btn--flat v-btn--icon v-btn--round theme--light v-size--default"><span
                                                             class="v-btn__content"><svg
                                                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
                                                                 height="24" width="24" role="img" aria-hidden="true"
                                                                 class="v-icon notranslate v-icon--svg theme--light">
-                                                                <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z">
+                                                                <path
+                                                                    d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z">
                                                                 </path>
                                                             </svg></span></button>
                                                     <!---->
@@ -182,7 +174,7 @@
                                             <div class="elevation-1 v-card v-sheet theme--light">
                                                 <div class="v-card__title">
                                                     Informationen
-                                                    <div class="spacer"></div> <button type="button"
+                                                    <div class="spacer"></div> <button type="button" {{action "toggleNoteDisplay" @model 'information'}}
                                                         class="v-btn v-btn--flat v-btn--icon v-btn--round theme--light v-size--default"><span
                                                             class="v-btn__content"><svg
                                                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
@@ -191,16 +183,7 @@
                                                                 <path
                                                                     d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z">
                                                                 </path>
-                                                            </svg></span></button> <button type="button"
-                                                        class="v-btn v-btn--flat v-btn--icon v-btn--round theme--light v-size--default"><span
-                                                            class="v-btn__content"><svg
-                                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                                                                height="24" width="24" role="img" aria-hidden="true"
-                                                                class="v-icon notranslate v-icon--svg theme--light">
-                                                                <path
-                                                                    d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z">
-                                                                </path>
-                                                            </svg></span></button></div>
+                                                            </svg></span></button> </div>
                                                 <div class="v-card__text">{{@model.information.value}}</div>
                                             </div>
                                         </div>
@@ -356,18 +339,98 @@
         </div>
     </div>
     {{/if}}
+
+    {{#if showNoteCard}}
+    <div tabindex="0" class="ghEditSubstitutionCard v-dialog__content v-dialog__content--active">
+        <div class="v-dialog vuedl-layout v-dialog--active" style="max-width: 450px;">
+            <div class="px-4 py-3 v-card v-sheet theme--light">
+                <div class="v-card__title">Eintrag bearbeiten</div>
+                <div class="v-card__text">
+                <div
+                    class="v-input v-textarea v-input--is-label-active v-input--is-dirty theme--light v-text-field v-text-field--is-booted v-text-field--enclosed v-text-field--outlined">
+                    <div class="v-input__control">
+                        <div class="v-input__slot noteCrad">
+                            <fieldset aria-hidden="true">
+                                <legend style="width: 0px;"><span>&#8203;</span></legend>
+                            </fieldset>
+                            <div class="v-text-field__slot">
+                                {{textarea id="input-130" rows="5" value=this.itemNoteToEdit }}</div>
+                        </div>
+                        <div class="v-text-field__details">
+                            <div class="v-messages theme--light">
+                                <div class="v-messages__wrapper"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                <div class="v-card__actions">
+                    <div class="spacer"></div>
+                    <button type="button" {{action "toggleNoteDisplay"}}
+                        class="v-btn v-btn--flat v-btn--text theme--light v-size--default primary--text"><span
+                            class="v-btn__content">Abbrechen</span></button>
+                    <button {{action "editNote"}} type="button"
+                        class="v-btn v-btn--flat v-btn--text theme--light v-size--default primary--text"><a
+                            class="v-btn__content">Speichern</a></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/if}}
+
     {{#if isShowingeditSubstitutionModal}}
     {{#modal-dialog
         onClose=(action "toggleeditSubstitutionModal")
         targetAttachment="center"
         translucentOverlay=true
     }}
-
   <h3>Eintrag erfolgreich gespeichert.</h3>
   <p>Änderungen wurden in die Datenbank geschrieben.</p>
-  <div><button class="v-btn" style="margin: auto;display: flex;" {{action 'toggleeditSubstitutionModal'}}>OK</button></div>
+  <div><button class="v-btn" style="margin: auto;display: flex;" {{action 'toggleeditSubstitutionModal'}}>OK</button></div>      
+    {{/modal-dialog}}
+    {{/if}}
 
-        
+    {{#if isShowingDeleteSubstitutionModal}}
+    {{#modal-dialog
+        onClose=(action "toggledelteSubstitutionModal")
+        targetAttachment="center"
+        translucentOverlay=true
+    }}
+  <h3>Eintrag löschen</h3>
+  <p>Möchten Sie diesen Eintrag wirklich löschen?</p>
+  <div class="v-card__actions">
+        <div class="spacer"></div>
+        <button type="button" {{action "toggledelteSubstitutionModal"}}
+            class="v-btn v-btn--flat v-btn--text theme--light v-size--default primary--text"><span
+                class="v-btn__content">Abbrechen</span></button>
+        <button {{action "deleteSubstitution"}} type="button"
+            class="v-btn v-btn--flat v-btn--text theme--light v-size--default primary--text"><a
+                class="v-btn__content">Löschen</a></button>
+    </div>  
+    {{/modal-dialog}}
+    {{/if}}
+
+    {{#if isShowingDeleteConfirmModal}}
+    {{#modal-dialog
+        onClose=(action "toggleeditNoteModal")
+        targetAttachment="center"
+        translucentOverlay=true
+    }}
+  <h3>Eintrag erfolgreich gelöscht.</h3>
+  <p>Eintrag wurde aus der Datenbank gelöscht.</p>
+  <div><button class="v-btn" style="margin: auto;display: flex;" {{action 'toggledelteSubstitutionConfirmModal'}}>OK</button></div>      
+    {{/modal-dialog}}
+    {{/if}}
+
+    {{#if isShowingEditNoteModal}}
+    {{#modal-dialog
+        onClose=(action "toggleeditNoteModal")
+        targetAttachment="center"
+        translucentOverlay=true
+    }}
+  <h3>Eintrag erfolgreich gespeichert.</h3>
+  <p>Änderungen wurden in die Datenbank geschrieben.</p>
+  <div><button class="v-btn" style="margin: auto;display: flex;" {{action 'toggleeditNoteModal'}}>OK</button></div>      
     {{/modal-dialog}}
     {{/if}}
 </section>
