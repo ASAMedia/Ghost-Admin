@@ -32,7 +32,7 @@ module.exports = function (environment) {
         },
 
         apollo: {
-            apiURL: 'https://vp.lyonel-feininger-gymnasium.de/api/',
+            apiURL: 'http://localhost:2368/ghost/api/v2/admin/vertretungsplan/graphql',
             // Optionally, set the credentials property of the Fetch Request interface
             // to control when a cookie is sent:
             //requestCredentials: 'include', // other choices: 'same-origin', 'omit'

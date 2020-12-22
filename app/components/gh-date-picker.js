@@ -1,5 +1,5 @@
 import Component from '@ember/component';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import {action, computed} from '@ember/object';
 import {isBlank, isEmpty} from '@ember/utils';
 import {or, reads} from '@ember/object/computed';
@@ -45,7 +45,7 @@ export default Component.extend({
         if (this._scratchDate !== null) {
             return this._scratchDate;
         } else {
-            return moment(this._date).format("dd");
+            return moment(this._date).locale('de').format("dd");
         }
     }),
   

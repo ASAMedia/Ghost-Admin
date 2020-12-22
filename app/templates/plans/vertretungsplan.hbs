@@ -1,20 +1,16 @@
 <section class="gh-canvas">
     <div>
         <GhCanvasHeader class="gh-canvas-header">
-            <h2 class="gh-canvas-title" data-test-screen-title>
+            <h2 class="gh-canvas-title" data-test-screen-title {{action 'refreshPage'}}>
                 Vertretungsplan
             </h2>
             <div data-app="true" class="v-application plans_toolbar" id="app">
-                <LinkTo class="schoolselectorbtn"
+                <a class="schoolselectorbtn" {{action 'switchPlan' 'ck0tg2e3d00000iqj5bk4a6pc'}}
                     style={{if @model.isMellingen "font-weight: 900;font-size: large;background-color: rgb(115 115 115 / 15%);border: solid 1px rgb(162 162 162);" ""}}
-                    @route="plans.vertretungsplan"
-                    @models={{array 'ck0tg2e3d00000iqj5bk4a6pc' (moment-format (now) 'YYYY-MM-DD')}}
-                    data-test-nav="vertretungsplan"><span class="v-btn__content">Mellingen</span></LinkTo>
-                <LinkTo class="schoolselectorbtn"
+                    data-test-nav="vertretungsplan"><span class="v-btn__content">Mellingen</span></a>
+                <a class="schoolselectorbtn" {{action 'switchPlan' 'ck0tg2ie400010iqjfp4pe4cx'}}
                     style={{if @model.isMellingen "" "font-weight: 900;font-size: large;background-color: rgb(115 115 115 / 15%);border: solid 1px rgb(162 162 162);"}}
-                    @route="plans.vertretungsplan"
-                    @models={{array 'ck0tg2ie400010iqjfp4pe4cx' (moment-format (now) 'YYYY-MM-DD')}}
-                    data-test-nav="vertretungsplan"><span class="v-btn__content">Buttelstedt</span></LinkTo>
+                    data-test-nav="vertretungsplan"><span class="v-btn__content">Buttelstedt</span></a>
             </div>
         </GhCanvasHeader>
 
@@ -138,7 +134,7 @@
                                             <div class="elevation-1 v-card v-sheet theme--light">
                                                 <div class="v-card__title">
                                                     Abwesende Lehrer
-                                                    <div class="spacer"></div> <button type="button" {{action "toggleNoteDisplay" @model 'abwesend'}}
+                                                    <div class="spacer"></div> <button type="button" {{action "toggleNoteDisplay" @model 'missing_teachers'}}
                                                         class="v-btn v-btn--flat v-btn--icon v-btn--round theme--light v-size--default"><span
                                                             class="v-btn__content"><svg
                                                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"

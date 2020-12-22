@@ -1,43 +1,12 @@
-import $ from 'jquery';
 import Controller from '@ember/controller';
 import generatePassword from 'ghost-admin/utils/password-generator';
-import validator from 'validator';
-import {
-    IMAGE_EXTENSIONS,
-    IMAGE_MIME_TYPES
-} from 'ghost-admin/components/gh-image-uploader';
-import {computed} from '@ember/object';
 import {inject as service} from '@ember/service';
-import {task} from 'ember-concurrency';
 import mutation from 'ghost-admin/gql/queries/vpEdit.graphql';
 import gql from "graphql-tag";
 
-const ICON_EXTENSIONS = ['ico', 'png'];
-
-function randomPassword() {
-    let word = generatePassword(6);
-    let randomN = Math.floor(Math.random() * 1000);
-
-    return word + randomN;
-}
-
 export default Controller.extend({
-    config: service(),
-    ghostPaths: service(),
-    notifications: service(),
-    session: service(),
-    settings: service(),
-    ui: service(),
-    router: service(),
     apollo: service(),
 
-    availableTimezones: null,
-    iconExtensions: null,
-    iconMimeTypes: 'image/png,image/x-icon',
-    imageExtensions: IMAGE_EXTENSIONS,
-    imageMimeTypes: IMAGE_MIME_TYPES,
-    _scratchFacebook: null,
-    _scratchTwitter: null,
     showSubstitutionCard: false,
     isCreatingSubstitution: false,
     showNoteCard: false,
@@ -48,48 +17,45 @@ export default Controller.extend({
     isMell: '',
     init() {
         this._super(...arguments);
-        this.iconExtensions = ICON_EXTENSIONS;
-        const url=window.location.href;
-        const parameter=url.split('/');
+        let url=window.location.href;
+        let parameter=url.split('/');
         this.set('url',url);
         this.set('params',parameter);
-        this.set('date',parameter[parameter.length-1]);
+        this.set('date',moment(parameter[parameter.length-1]).format('YYYY-MM-DD'));
         this.set('plan',parameter[parameter.length-2]);
         this.set('isMell',(this.plan=='ck0tg2e3d00000iqj5bk4a6pc' ? true :false ));
     },
     
-    privateRSSUrl: computed('config.blogUrl', 'settings.publicHash', function () {
-        let blogUrl = this.get('config.blogUrl');
-        let publicHash = this.get('settings.publicHash');
-
-        return `${blogUrl}/${publicHash}/rss`;
-    }),
     getUrlParams(){
         return this.params;
     },
     actions: {
+        switchPlan(params){
+            const url=this.url.slice(this.url.lastIndexOf('#')+1,this.url.lastIndexOf('/', this.url.lastIndexOf('/')-1));
+            this.url=`${url}/${params}/${this.date}`;
+            this.plan=params;
+            this.isMell=(this.plan=='ck0tg2e3d00000iqj5bk4a6pc' ? true :false );
+            this.transitionToRoute(this.url);
+        },
         reloadSite(date) {
-            const dateString = moment(date).format('YYYY-MM-DD');            
-            let url = this.url;
-            url=url.slice(url.lastIndexOf('#')+1,url.lastIndexOf('/'));
-            this.transitionToRoute(`${url}/${dateString}`);
+            this.date = moment(date).format('YYYY-MM-DD');            
+            const url=this.url.slice(this.url.lastIndexOf('#')+1,this.url.lastIndexOf('/'));
+            this.transitionToRoute(`${url}/${this.date}`);
         },
         nextVp() {          
-            let url = this.url;
-            url=url.slice(url.lastIndexOf('#')+1,url.lastIndexOf('/'));
-            const dateString = moment(this.date).add(1,'days').format('YYYY-MM-DD');    
-            this.transitionToRoute(`${url}/${dateString}`);
+            const url=this.url.slice(this.url.lastIndexOf('#')+1,this.url.lastIndexOf('/'));
+            this.date = moment(this.date).add(1,'days').format('YYYY-MM-DD');   
+            console.log(url); 
+            this.transitionToRoute(`${url}/${this.date}`);
         },
         prevVp() {          
-            let url = this.url;
-            url=url.slice(url.lastIndexOf('#')+1,url.lastIndexOf('/'));
-            const dateString = moment(this.date).subtract(1,'days').format('YYYY-MM-DD');    
-            this.transitionToRoute(`${url}/${dateString}`);
+            const url=this.url.slice(this.url.lastIndexOf('#')+1,this.url.lastIndexOf('/'));
+            this.date = moment(this.date).subtract(1,'days').format('YYYY-MM-DD');    
+            this.transitionToRoute(`${url}/${this.date}`);
         },
         async openExportDialog(fileFormat){
-            //`${this.$env.EXPORTER_ENDPOINT}/?plan=${this.plan}&date=${this.date}&type=${this.fileFormat!.key}`
-            let response = await fetch(`https://vp.lyonel-feininger-gymnasium.de/export/?plan=${this.plan}&date=${this.date}&type=${fileFormat.key}`, {
-                method: "post",
+            const response = await fetch(`http://localhost:2368/ghost/api/v2/admin/vertretungsplan/export?plan=${this.plan}&date=${this.date}&type=${fileFormat.key}`, {
+                method: "get",
               });
             let array=await response.arrayBuffer();
             var file = new Blob([array], { type: fileFormat.mime });
@@ -204,8 +170,11 @@ export default Controller.extend({
                 }};
                 let data = await this.apollo.mutate({ mutation, variables},'updateSubstitution').catch(error => alert(error));
             }
+            
             this.toggleProperty('showSubstitutionCard');
-            this.toggleProperty('isShowingeditSubstitutionModal');
+            this.toggleProperty('isShowingeditSubstitutionModal');   
+          this.send('refreshPage');
+          
         },
         toggleeditSubstitutionModal() {
             this.toggleProperty('isShowingeditSubstitutionModal');
@@ -229,6 +198,7 @@ export default Controller.extend({
             await this.apollo.mutate({mutation: query, variables}).catch(error => alert(error));
             this.toggleProperty('isShowingDeleteSubstitutionModal');
             this.toggleProperty('isShowingDeleteConfirmModal');
+            this.send('refreshPage');
         },
         isShowingDeleteConfirmModal: false,
         toggledelteSubstitutionConfirmModal() {
@@ -238,16 +208,20 @@ export default Controller.extend({
       
           /**Actions for NoteCard */
           itemNoteToEdit:'',
+          itemNoteKey:'',
           toggleNoteDisplay(item, type) {
             if (item!=undefined){
-                if(type==='abwesend'){
-                    this.set('itemNoteToEdit', ((item.abwesend != null) ? item.abwesend.value : ' '));
+                if(type==='missing_teachers'){
+                    this.set('itemNoteToEdit', (item.abwesend!==null ? item.abwesend.value : ' '));
+                    this.set('itemNoteKey', `${this.plan}_${this.date}_${type}`);
                 }
                 else if(type==='av'){
-                    this.set('itemNoteToEdit',((item.av != null) ? item.av.value : ' '));
+                    this.set('itemNoteToEdit',(item.av!==null ? item.av.value : ' '));
+                    this.set('itemNoteKey', `${this.plan}_${this.date}_${type}`);
                 }
                 else if(type==='information'){
-                    this.set('itemNoteToEdit',((item.information != null) ? item.information.value : ' '));
+                    this.set('itemNoteToEdit',(item.information!==null ? item.information.value : ' '));
+                    this.set('itemNoteKey', `${this.plan}_${this.date}_${type}`);
                 }
             }
             this.toggleProperty('showNoteCard');
@@ -255,260 +229,33 @@ export default Controller.extend({
 
         isShowingEditNoteModal: false,
         async editNote() {
-            this.toggleProperty('showNoteCard');
-            this.toggleProperty('isShowingEditNoteModal');
+            console.log(this.itemNoteToEdit);
             const variables = {
                 data: {
-                    key: this.plan,
+                    key: this.itemNoteKey,
                     value: this.itemNoteToEdit
-                  }
+                    }
             };
-            const query = gql`
+            const mutation = gql`
             mutation($data: NoteCreateInput!) {
                 createNote(data: $data) {
-                  id
-                  key
-                  value
+                    id
+                    key
+                    value
                 }
-              }
+                }
             `;
-            let data = await this.apollo.mutate({mutation: query , variables},'createNote').catch(error => alert(error));
+            await this.apollo.mutate({mutation, variables}).catch(error => alert(error));
+
             this.toggleProperty('showNoteCard');
             this.toggleProperty('isShowingEditNoteModal');
+            this.send('refreshPage');
         },
         toggleeditNoteModal() {
             this.toggleProperty('isShowingEditNoteModal');
           },
       
 
-        /**
-         * Opens a file selection dialog - Triggered by "Upload Image" buttons,
-         * searches for the hidden file input within the .gh-setting element
-         * containing the clicked button then simulates a click
-         * @param  {MouseEvent} event - MouseEvent fired by the button click
-         */
-        triggerFileDialog(event) {
-            // simulate click to open file dialog
-            // using jQuery because IE11 doesn't support MouseEvent
-            $(event.target)
-                .closest('.gh-setting-action')
-                .find('input[type="file"]')
-                .click();
-        },
-
-        /**
-         * Fired after an image upload completes
-         * @param  {string} property - Property name to be set on `this.settings`
-         * @param  {UploadResult[]} results - Array of UploadResult objects
-         * @return {string} The URL that was set on `this.settings.property`
-         */
-        imageUploaded(property, results) {
-            if (results[0]) {
-                return this.settings.set(property, results[0].url);
-            }
-        },
-
-        toggleIsPrivate(isPrivate) {
-            let settings = this.settings;
-
-            settings.set('isPrivate', isPrivate);
-            settings.get('errors').remove('password');
-
-            let changedAttrs = settings.changedAttributes();
-
-            // set a new random password when isPrivate is enabled
-            if (isPrivate && changedAttrs.isPrivate) {
-                settings.set('password', randomPassword());
-
-            // reset the password when isPrivate is disabled
-            } else if (changedAttrs.password) {
-                settings.set('password', changedAttrs.password[0]);
-            }
-        },
-
-        toggleLeaveSettingsModal(transition) {
-            let leaveTransition = this.leaveSettingsTransition;
-
-            if (!transition && this.showLeaveSettingsModal) {
-                this.set('leaveSettingsTransition', null);
-                this.set('showLeaveSettingsModal', false);
-                return;
-            }
-
-            if (!leaveTransition || transition.targetName === leaveTransition.targetName) {
-                this.set('leaveSettingsTransition', transition);
-
-                // if a save is running, wait for it to finish then transition
-                if (this.save.isRunning) {
-                    return this.save.last.then(() => {
-                        transition.retry();
-                    });
-                }
-
-                // we genuinely have unsaved data, show the modal
-                this.set('showLeaveSettingsModal', true);
-            }
-        },
-
-        leaveSettings() {
-            let transition = this.leaveSettingsTransition;
-            let settings = this.settings;
-
-            if (!transition) {
-                this.notifications.showAlert('Sorry, there was an error in the application. Please let the Ghost team know what happened.', {type: 'error'});
-                return;
-            }
-
-            // roll back changes on settings props
-            settings.rollbackAttributes();
-
-            return transition.retry();
-        },
-
-        validateFacebookUrl() {
-            let newUrl = this._scratchFacebook;
-            let oldUrl = this.get('settings.facebook');
-            let errMessage = '';
-
-            // reset errors and validation
-            this.get('settings.errors').remove('facebook');
-            this.get('settings.hasValidated').removeObject('facebook');
-
-            if (newUrl === '') {
-                // Clear out the Facebook url
-                this.set('settings.facebook', '');
-                return;
-            }
-
-            // _scratchFacebook will be null unless the user has input something
-            if (!newUrl) {
-                newUrl = oldUrl;
-            }
-
-            try {
-                // strip any facebook URLs out
-                newUrl = newUrl.replace(/(https?:\/\/)?(www\.)?facebook\.com/i, '');
-
-                // don't allow any non-facebook urls
-                if (newUrl.match(/^(http|\/\/)/i)) {
-                    throw 'invalid url';
-                }
-
-                // strip leading / if we have one then concat to full facebook URL
-                newUrl = newUrl.replace(/^\//, '');
-                newUrl = `https://www.facebook.com/${newUrl}`;
-
-                // don't allow URL if it's not valid
-                if (!validator.isURL(newUrl)) {
-                    throw 'invalid url';
-                }
-
-                this.settings.set('facebook', newUrl);
-                this.settings.notifyPropertyChange('facebook');
-            } catch (e) {
-                if (e === 'invalid url') {
-                    errMessage = 'The URL must be in a format like '
-                               + 'https://www.facebook.com/yourPage';
-                    this.get('settings.errors').add('facebook', errMessage);
-                    return;
-                }
-
-                throw e;
-            } finally {
-                this.get('settings.hasValidated').pushObject('facebook');
-            }
-        },
-
-        validateTwitterUrl() {
-            let newUrl = this._scratchTwitter;
-            let oldUrl = this.get('settings.twitter');
-            let errMessage = '';
-
-            // reset errors and validation
-            this.get('settings.errors').remove('twitter');
-            this.get('settings.hasValidated').removeObject('twitter');
-
-            if (newUrl === '') {
-                // Clear out the Twitter url
-                this.set('settings.twitter', '');
-                return;
-            }
-
-            // _scratchTwitter will be null unless the user has input something
-            if (!newUrl) {
-                newUrl = oldUrl;
-            }
-
-            if (newUrl.match(/(?:twitter\.com\/)(\S+)/) || newUrl.match(/([a-z\d.]+)/i)) {
-                let username = [];
-
-                if (newUrl.match(/(?:twitter\.com\/)(\S+)/)) {
-                    [, username] = newUrl.match(/(?:twitter\.com\/)(\S+)/);
-                } else {
-                    [username] = newUrl.match(/([^/]+)\/?$/mi);
-                }
-
-                // check if username starts with http or www and show error if so
-                if (username.match(/^(http|www)|(\/)/) || !username.match(/^[a-z\d._]{1,15}$/mi)) {
-                    errMessage = !username.match(/^[a-z\d._]{1,15}$/mi) ? 'Your Username is not a valid Twitter Username' : 'The URL must be in a format like https://twitter.com/yourUsername';
-
-                    this.get('settings.errors').add('twitter', errMessage);
-                    this.get('settings.hasValidated').pushObject('twitter');
-                    return;
-                }
-
-                newUrl = `https://twitter.com/${username}`;
-
-                this.settings.get('hasValidated').pushObject('twitter');
-                this.settings.set('twitter', newUrl);
-                this.settings.notifyPropertyChange('twitter');
-            } else {
-                errMessage = 'The URL must be in a format like '
-                           + 'https://twitter.com/yourUsername';
-                this.get('settings.errors').add('twitter', errMessage);
-                this.get('settings.hasValidated').pushObject('twitter');
-                return;
-            }
-        }
+        
     },
-
-    _deleteTheme() {
-        let theme = this.store.peekRecord('theme', this.themeToDelete.name);
-
-        if (!theme) {
-            return;
-        }
-
-        return theme.destroyRecord().catch((error) => {
-            this.notifications.showAPIError(error);
-        });
-    },
-
-    save: task(function* () {
-        let notifications = this.notifications;
-        let config = this.config;
-
-        if (this.settings.get('twitter') !== this._scratchTwitter) {
-            this.send('validateTwitterUrl');
-        }
-
-        if (this.settings.get('facebook') !== this._scratchFacebook) {
-            this.send('validateFacebookUrl');
-        }
-
-        try {
-            let settings = yield this.settings.save();
-            config.set('blogTitle', settings.get('title'));
-
-            // this forces the document title to recompute after a blog title change
-            this.ui.updateDocumentTitle();
-
-            return settings;
-        } catch (error) {
-            if (error) {
-                notifications.showAPIError(error, {key: 'settings.save'});
-            }
-            throw error;
-        }
-    })
 });

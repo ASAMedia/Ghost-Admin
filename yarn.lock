@@ -6789,6 +6789,14 @@ ember-invoke-action@^1.5.0:
   dependencies:
     ember-cli-babel "^6.6.0"
 
+ember-link-action@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/ember-link-action/-/ember-link-action-2.0.3.tgz#c443cdae95af3ddf4da5d61a53065ed3b7c910b1"
+  integrity sha512-HkneVsCSFOdcD1TSYnBbDCIW0rE/R2dwcKi5Bv3lxueCrCXUx1H7j+iew2g5X9ledQtTDZ0hKfPCB+ejBqSFIQ==
+  dependencies:
+    ember-cli-babel "7.23.0"
+    ember-cli-htmlbars "5.3.1"
+
 ember-load-initializers@2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/ember-load-initializers/-/ember-load-initializers-2.1.2.tgz#8a47a656c1f64f9b10cecdb4e22a9d52ad9c7efa"
@@ -11122,6 +11130,13 @@ moment-timezone@^0.5.13:
   version "0.5.31"
   resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.31.tgz#9c40d8c5026f0c7ab46eda3d63e49c155148de05"
   integrity sha512-+GgHNg8xRhMXfEbv81iDtrVeTcWt0kWmTEY1XQK14dICTXnWJnT0dxdlPspwqF3keKMVPXwayEsk1DI0AA/jdA==
+  dependencies:
+    moment ">= 2.9.0"
+
+moment-timezone@^0.5.32:
+  version "0.5.32"
+  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.32.tgz#db7677cc3cc680fd30303ebd90b0da1ca0dfecc2"
+  integrity sha512-Z8QNyuQHQAmWucp8Knmgei8YNo28aLjJq6Ma+jy1ZSpSk5nyfRT8xgUbSQvD2+2UajISfenndwvFuH3NGS+nvA==
   dependencies:
     moment ">= 2.9.0"
 
