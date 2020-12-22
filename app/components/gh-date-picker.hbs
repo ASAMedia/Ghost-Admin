@@ -1,7 +1,9 @@
 <div class="gh-date-picker">
     <PowerDatepicker
         @selected={{this._date}}
-        @center={{this._date}}
+        @center={{center}}
+        {{!-- {{this._date}} --}}
+        @onCenterChange={{action (mut center) value="date"}}
         @onSelect={{action "setDate" value="date"}}
         @renderInPlace={{true}}
         @disabled={{this.disabled}} as |dp|

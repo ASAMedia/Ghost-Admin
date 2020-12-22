@@ -26,8 +26,14 @@ export default Controller.extend({
         this.set('isMell',(this.plan=='ck0tg2e3d00000iqj5bk4a6pc' ? true :false ));
     },
     
-    getUrlParams(){
-        return this.params;
+    updateVars(){
+        let url=window.location.href;
+        let parameter=url.split('/');
+        this.set('url',url);
+        this.set('params',parameter);
+        this.set('date',moment(parameter[parameter.length-1]).format('YYYY-MM-DD'));
+        this.set('plan',parameter[parameter.length-2]);
+        this.set('isMell',(this.plan=='ck0tg2e3d00000iqj5bk4a6pc' ? true :false ));
     },
     actions: {
         switchPlan(params){
@@ -42,13 +48,14 @@ export default Controller.extend({
             const url=this.url.slice(this.url.lastIndexOf('#')+1,this.url.lastIndexOf('/'));
             this.transitionToRoute(`${url}/${this.date}`);
         },
-        nextVp() {          
+        nextVp() {    
+            this.updateVars();      
             const url=this.url.slice(this.url.lastIndexOf('#')+1,this.url.lastIndexOf('/'));
             this.date = moment(this.date).add(1,'days').format('YYYY-MM-DD');   
-            console.log(url); 
             this.transitionToRoute(`${url}/${this.date}`);
         },
-        prevVp() {          
+        prevVp() {       
+            this.updateVars();   
             const url=this.url.slice(this.url.lastIndexOf('#')+1,this.url.lastIndexOf('/'));
             this.date = moment(this.date).subtract(1,'days').format('YYYY-MM-DD');    
             this.transitionToRoute(`${url}/${this.date}`);

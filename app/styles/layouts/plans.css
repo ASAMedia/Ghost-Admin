@@ -324,3 +324,22 @@ legend{border:0;color:inherit;display:table;max-width:100%;white-space:normal;}
   z-index: 202;
   background-color: rgb(49 49 49 / 43%);
 }
+.v-application button.ember-power-calendar-day--current-month {
+  background-color: #e6f1fd;
+  color: #54666d;
+}
+.v-application button.ember-power-calendar-weekdays {
+  color: #343f44;
+}
+.v-application button.ember-power-calendar-day{
+  color: #6b6b6b;
+  font-size: inherit;
+}
+.v-application button.ember-power-calendar-day--selected{
+  background-color: #ff7a009e;
+  font-weight: 700;
+  color: #54666d;
+}
+.v-application button.ember-power-calendar-day--today{
+  background-color: #dadada;
+}

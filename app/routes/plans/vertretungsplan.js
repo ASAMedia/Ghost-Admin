@@ -93,6 +93,7 @@ export default AuthenticatedRoute.extend(CurrentUserSettings, {
         willTransition(transition) {
             let controller = this.controller;
             let settings = this.settings;
+            
         },
 
     },

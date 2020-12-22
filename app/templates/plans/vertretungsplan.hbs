@@ -1,9 +1,9 @@
 <section class="gh-canvas">
     <div>
         <GhCanvasHeader class="gh-canvas-header">
-            <h2 class="gh-canvas-title" data-test-screen-title {{action 'refreshPage'}}>
+            <h2 class="gh-canvas-title" data-test-screen-title>
                 Vertretungsplan
-            </h2>
+            </h2><h5>&nbsp;&nbsp;&nbsp;{{if @model.isMellingen "Mellingen" "Buttelstedt"}}</h5>
             <div data-app="true" class="v-application plans_toolbar" id="app">
                 <a class="schoolselectorbtn" {{action 'switchPlan' 'ck0tg2e3d00000iqj5bk4a6pc'}}
                     style={{if @model.isMellingen "font-weight: 900;font-size: large;background-color: rgb(115 115 115 / 15%);border: solid 1px rgb(162 162 162);" ""}}
@@ -34,7 +34,7 @@
                                                         d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z">
                                                     </path>
                                                 </svg></span></a>
-                                        <GhDatePicker @date={{@model.date}} @setDate={{action "reloadSite"}} />
+                                        <GhDatePicker @selected={{@model.date}} @date={{@model.date}} @setDate={{action "reloadSite"}} />
                                         <a {{action "nextVp"}}
                                             class="v-btn v-btn--flat v-btn--icon v-btn--round v-btn--router theme--light v-size--small"><span
                                                 class="v-btn__content"><svg xmlns="http://www.w3.org/2000/svg"
