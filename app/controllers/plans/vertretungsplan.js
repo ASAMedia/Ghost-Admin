@@ -1,11 +1,12 @@
 import Controller from '@ember/controller';
-import generatePassword from 'ghost-admin/utils/password-generator';
+import { get } from '@ember/object';
 import {inject as service} from '@ember/service';
 import mutation from 'ghost-admin/gql/queries/vpEdit.graphql';
 import gql from "graphql-tag";
 
 export default Controller.extend({
     apollo: service(),
+    session: service(),
 
     showSubstitutionCard: false,
     isCreatingSubstitution: false,
@@ -61,8 +62,11 @@ export default Controller.extend({
             this.transitionToRoute(`${url}/${this.date}`);
         },
         async openExportDialog(fileFormat){
-            const response = await fetch(`http://localhost:2368/ghost/api/v2/admin/vertretungsplan/export?plan=${this.plan}&date=${this.date}&type=${fileFormat.key}`, {
+            let session=await this.session;
+            const response = await fetch(`${window.location.origin}/ghost/api/v2/admin/vertretungsplan/export?plan=${this.plan}&date=${this.date}&type=${fileFormat.key}`, {
                 method: "get",
+                headers: {
+                isplanseditor: get(session.user,'isPlanseditor')}
               });
             let array=await response.arrayBuffer();
             var file = new Blob([array], { type: fileFormat.mime });
