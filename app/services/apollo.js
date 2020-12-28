@@ -21,7 +21,7 @@ class OverriddenApollo extends ApolloService {
       this.getUser();
       return new Promise(success => {
         let headers = {};
-        headers['isplanseditor'] = get(this.User,'isPlanseditor');
+        headers['isplanseditor'] = get(this.User,'isEditorOrPlanseditor');
         success({ headers });
       });
     });
