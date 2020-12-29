@@ -1,9 +1,11 @@
+import 'moment/locale/de';
 import ApplicationRouteMixin from 'ember-simple-auth/mixins/application-route-mixin';
 import AuthConfiguration from 'ember-simple-auth/configuration';
 import RSVP from 'rsvp';
 import Route from '@ember/routing/route';
 import ShortcutsRoute from 'ghost-admin/mixins/shortcuts-route';
 import ctrlOrCmd from 'ghost-admin/utils/ctrl-or-cmd';
+import moment from 'moment';
 import windowProxy from 'ghost-admin/utils/window-proxy';
 import {
     isAjaxError,
@@ -17,8 +19,6 @@ import {
 } from 'ghost-admin/services/ajax';
 import {run} from '@ember/runloop';
 import {inject as service} from '@ember/service';
-import moment from 'moment';
-import 'moment/locale/de' ;
 
 function K() {
     return this;

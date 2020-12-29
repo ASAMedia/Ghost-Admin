@@ -45,7 +45,7 @@ export default Component.extend({
         if (this._scratchDate !== null) {
             return this._scratchDate;
         } else {
-            return moment(this._date).locale('de').format("dd");
+            return moment(this._date).locale('de').format('dd');
         }
     }),
   
@@ -82,11 +82,9 @@ export default Component.extend({
 
     didReceiveAttrs() {
         let date = this.date;
-        let time = this.time;
         let minDate = this.minDate;
         let maxDate = this.maxDate;
         let blogTimezone = this.blogTimezone;
-
 
         if (!isBlank(date)) {
             this.set('_date', moment(date));
@@ -136,7 +134,7 @@ export default Component.extend({
             if (date !== this._date) {
                 this.setDate(date);
             }
-        },
+        }
     },
 
     onDateInput: action(function (datepicker, event) {
