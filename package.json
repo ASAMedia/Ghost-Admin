@@ -152,7 +152,7 @@
     "ember-apollo-client": "^3.0.2",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
-    "moment-timezone": "^0.5.32",
+    "moment-timezone": "^0.5.31",
     "rsvp": "^4.8.5"
   }
 }
