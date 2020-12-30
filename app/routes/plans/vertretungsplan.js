@@ -93,7 +93,3 @@ export default AuthenticatedRoute.extend(CurrentUserSettings, {
     }
 
 });
-
-export function ghUserCanPlans(params) {
-    return !!(params[0].get('isEditorOrPlanseditor'));
-}
