@@ -208,6 +208,7 @@ export default Controller.extend({
         itemNoteToEdit: '',
         itemNoteKey: '',
         toggleNoteDisplay(item, type) {
+            this.updateVars();
             if (item !== undefined) {
                 if (type === 'missing_teachers') {
                     this.set('itemNoteToEdit', (item.abwesend !== null ? item.abwesend.value : ' '));
