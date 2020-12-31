@@ -14,9 +14,6 @@ export default Controller.extend({
     showNoteCard: false,
     url: '',
     params: '',
-    date: '',
-    plan: '',
-    isMell: '',
     vpModel: alias('model'),
     
     init() {
@@ -26,32 +23,32 @@ export default Controller.extend({
     actions: {
         switchPlan(params) {
             const url = this.url.slice(this.url.lastIndexOf('#') + 1, this.url.lastIndexOf('/', this.url.lastIndexOf('/') - 1));
-            this.url = `${url}/${params}/${this.date}`;
-            this.plan = params;
-            this.isMell = (this.plan === 'ck0tg2e3d00000iqj5bk4a6pc' ? true : false);
+            this.url = `${url}/${params}/${this.vpModel.date}`;
+            this.vpModel.plan = params;
+            this.vpModel.isMellingen = (this.vpModel.plan === 'ck0tg2e3d00000iqj5bk4a6pc' ? true : false);
             this.transitionToRoute(this.url);
         },
         reloadSite(date) {
             this.updateVars();
-            this.date = moment(date).format('YYYY-MM-DD');
+            this.vpModel.date = moment(date).format('YYYY-MM-DD');
             const url = this.url.slice(this.url.lastIndexOf('#') + 1, this.url.lastIndexOf('/'));
-            this.transitionToRoute(`${url}/${this.date}`);
+            this.transitionToRoute(`${url}/${this.vpModel.date}`);
         },
         nextVp() {
             this.updateVars();
             const url = this.url.slice(this.url.lastIndexOf('#') + 1, this.url.lastIndexOf('/'));
-            this.date = moment(this.date).add(1, 'days').format('YYYY-MM-DD');
-            this.transitionToRoute(`${url}/${this.date}`);
+            this.vpModel.date = moment(this.vpModel.date).add(1, 'days').format('YYYY-MM-DD');
+            this.transitionToRoute(`${url}/${this.vpModel.date}`);
         },
         prevVp() {
             this.updateVars();
             const url = this.url.slice(this.url.lastIndexOf('#') + 1, this.url.lastIndexOf('/'));
-            this.date = moment(this.date).subtract(1, 'days').format('YYYY-MM-DD');
-            this.transitionToRoute(`${url}/${this.date}`);
+            this.vpModel.date = moment(this.vpModel.date).subtract(1, 'days').format('YYYY-MM-DD');
+            this.transitionToRoute(`${url}/${this.vpModel.date}`);
         },
         async openExportDialog(fileFormat) {
             let session = await this.session;
-            const response = await fetch(`${window.location.origin}/ghost/api/v2/admin/vertretungsplan/export?plan=${this.plan}&date=${this.date}&type=${fileFormat.key}`, {
+            const response = await fetch(`${window.location.origin}/ghost/api/v2/admin/vertretungsplan/export?plan=${this.vpModel.plan}&date=${this.vpModel.date}&type=${fileFormat.key}`, {
                 method: 'get',
                 headers: {
                     isplanseditor: get(session.user, 'isEditorOrPlanseditor')
@@ -61,14 +58,14 @@ export default Controller.extend({
             var file = new Blob([array], {type: fileFormat.mime});
             var fileURL = URL.createObjectURL(file);
             if (window.navigator && window.navigator.msSaveOrOpenBlob) {
-                window.navigator.msSaveOrOpenBlob(fileURL, (this.isMell ? `Mellingen-${this.date}` : `Buttelstedt-${this.date}`));
+                window.navigator.msSaveOrOpenBlob(fileURL, (this.vpModel.isMellingen ? `Mellingen-${this.vpModel.date}` : `Buttelstedt-${this.vpModel.date}`));
             } else {
                 var a = document.createElement('a');
                 document.body.appendChild(a);
                 a.style = 'display: none';
                 a.href = fileURL;
                 a.target = '_blank';
-                a.download = (this.isMell ? `Mellingen-${this.date}.${fileFormat.key}` : `Buttelstedt-${this.date}.${fileFormat.key}`);
+                a.download = (this.vpModel.isMellingen ? `Mellingen-${this.vpModel.date}.${fileFormat.key}` : `Buttelstedt-${this.vpModel.date}.${fileFormat.key}`);
                 a.click();
                 a.remove();
                 window.URL.revokeObjectURL(fileURL);
@@ -126,8 +123,8 @@ export default Controller.extend({
                 this.toggleProperty('isCreatingSubstitution');
                 const variables = {
                     data: {
-                        plan: {id: this.plan},
-                        date: this.date,
+                        plan: {id: this.vpModel.plan},
+                        date: this.vpModel.date,
                         class: itemToMutate.class,
                         teacher: itemToMutate.teacher,
                         replacement: itemToMutate.replacement,
@@ -208,17 +205,16 @@ export default Controller.extend({
         itemNoteToEdit: '',
         itemNoteKey: '',
         toggleNoteDisplay(item, type) {
-            this.updateVars();
             if (item !== undefined) {
                 if (type === 'missing_teachers') {
                     this.set('itemNoteToEdit', (item.abwesend !== null ? item.abwesend.value : ' '));
-                    this.set('itemNoteKey', `${this.plan}_${this.date}_${type}`);
+                    this.set('itemNoteKey', `${this.vpModel.plan}_${this.vpModel.date}_${type}`);
                 } else if (type === 'av') {
                     this.set('itemNoteToEdit', (item.av !== null ? item.av.value : ' '));
-                    this.set('itemNoteKey', `${this.plan}_${this.date}_${type}`);
+                    this.set('itemNoteKey', `${this.vpModel.plan}_${this.vpModel.date}_${type}`);
                 } else if (type === 'information') {
                     this.set('itemNoteToEdit', (item.information !== null ? item.information.value : ' '));
-                    this.set('itemNoteKey', `${this.plan}_${this.date}_${type}`);
+                    this.set('itemNoteKey', `${this.vpModel.plan}_${this.vpModel.date}_${type}`);
                 }
             }
             this.toggleProperty('showNoteCard');
@@ -250,15 +246,9 @@ export default Controller.extend({
         toggleeditNoteModal() {
             this.toggleProperty('isShowingEditNoteModal');
         }
-
     },
     updateVars(){
         let url = window.location.href;
-        let parameter = url.split('/');
         this.set('url',url);
-        this.set('params',parameter);
-        this.set('date', moment(parameter[parameter.length - 1]).format('YYYY-MM-DD'));
-        this.set('plan', parameter[parameter.length - 2]);
-        this.set('isMell', (this.plan === 'ck0tg2e3d00000iqj5bk4a6pc' ? true : false));
     }
 });
