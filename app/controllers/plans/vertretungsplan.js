@@ -54,7 +54,7 @@ export default Controller.extend({
             const response = await fetch(`${window.location.origin}/ghost/api/v2/admin/vertretungsplan/export?plan=${this.plan}&date=${this.date}&type=${fileFormat.key}`, {
                 method: 'get',
                 headers: {
-                    isplanseditor: get(session.user, 'isPlanseditor')
+                    isplanseditor: get(session.user, 'isEditorOrPlanseditor')
                 }
             });
             let array = await response.arrayBuffer();
