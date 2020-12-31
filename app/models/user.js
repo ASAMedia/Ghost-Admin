@@ -51,9 +51,9 @@ export default BaseModel.extend(ValidationEngine, {
     isPlanseditorEditor: equal('role.name', 'Planseditor Editor'),
     isPlanseditor: or('isPlanseditorOnly', 'isPlanseditorContributor', 'isPlanseditorAuthor', 'isPlanseditorEditor'),
 
-    isContributor: equal('role.name', 'Contributor'),
-    isAuthor: equal('role.name', 'Author'),
-    isEditor: equal('role.name', 'Editor'),
+    isContributor: equal('role.name', 'Contributor' | 'Planseditor Contributor'),
+    isAuthor: equal('role.name', 'Author' | 'Planseditor Author'),
+    isEditor: equal('role.name', 'Editor' | 'Planseditor Editor'),
     isAdmin: equal('role.name', 'Administrator'),
     isOwner: equal('role.name', 'Owner'),
 
