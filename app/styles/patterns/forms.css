@@ -72,6 +72,10 @@ input {
     font-weight: 400;
 }
 
+.form-group p.green {
+    color: var(--green);
+}
+
 .form-group h3 {
     margin-bottom: 1.6em;
     font-size: 1.5rem;
@@ -83,6 +87,12 @@ input {
 
 .form-group.max-width {
     max-width: 100%;
+}
+
+.form-group.pa5 {
+    max-width: 100%;
+    padding-left: calc(var(--grid-size) * 5);
+    padding-right: calc(var(--grid-size) * 5);
 }
 
 .form-group.mb0 {

@@ -1,5 +1,6 @@
 import Component from '@ember/component';
 import moment from 'moment';
+import {action} from '@ember/object';
 import {computed} from '@ember/object';
 import {gt} from '@ember/object/computed';
 import {inject as service} from '@ember/service';
@@ -13,6 +14,8 @@ export default Component.extend({
     ghostPaths: service(),
     ajax: service(),
     store: service(),
+
+    stripeDetailsType: 'subscription',
 
     // Allowed actions
     setProperty: () => {},
@@ -33,7 +36,7 @@ export default Component.extend({
         let subscriptions = this.member.get('stripe');
         if (subscriptions && subscriptions.length > 0) {
             return subscriptions.map((subscription) => {
-                const statusLabel = subscription.status === 'past_due' ? 'Past due' : subscription.status;
+                const statusLabel = subscription.status ? subscription.status.replace('_', ' ') : '';
                 return {
                     id: subscription.id,
                     customer: subscription.customer,
@@ -45,6 +48,7 @@ export default Component.extend({
                     plan: subscription.plan,
                     amount: parseInt(subscription.plan.amount) ? (subscription.plan.amount / 100) : 0,
                     cancelAtPeriodEnd: subscription.cancel_at_period_end,
+                    cancellationReason: subscription.cancellation_reason,
                     validUntil: subscription.current_period_end ? moment(subscription.current_period_end).format('D MMM YYYY') : '-'
                 };
             }).reverse();
@@ -55,8 +59,15 @@ export default Component.extend({
     actions: {
         setProperty(property, value) {
             this.setProperty(property, value);
+        },
+        setLabels(labels) {
+            this.member.set('labels', labels);
         }
     },
+
+    changeStripeDetailsType: action(function (type) {
+        this.set('stripeDetailsType', type);
+    }),
 
     cancelSubscription: task(function* (subscriptionId) {
         let url = this.get('ghostPaths.url').api('members', this.member.get('id'), 'subscriptions', subscriptionId);
