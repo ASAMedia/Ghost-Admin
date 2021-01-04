@@ -211,7 +211,7 @@
                                             <div class="v-text-field__slot"><label for="input-204"
                                                     class="v-label   theme--light"
                                                     style="left: 0px; right: auto; position: absolute;">Stunde</label>
-                                                    {{input id="input-204" type="text" value=itemToEditPeriod}}
+                                                    {{input id="input-204" type="number" min="0" max="20" step="1" keyPress=(action "isNumberKey") value=itemToEditPeriod}}
                                                     </div>
                                         </div>
                                     </div>
