@@ -1,6 +1,6 @@
 import Mirage from 'ember-cli-mirage';
 import ctrlOrCmd from 'ghost-admin/utils/ctrl-or-cmd';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import sinon from 'sinon';
 import {authenticateSession, invalidateSession} from 'ember-simple-auth/test-support';
 import {beforeEach, describe, it} from 'mocha';

@@ -3,7 +3,7 @@ import PostModel from 'ghost-admin/models/post';
 import boundOneWay from 'ghost-admin/utils/bound-one-way';
 import config from 'ghost-admin/config/environment';
 import isNumber from 'ghost-admin/utils/isNumber';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import {action, computed} from '@ember/object';
 import {alias, mapBy} from '@ember/object/computed';
 import {inject as controller} from '@ember/controller';
