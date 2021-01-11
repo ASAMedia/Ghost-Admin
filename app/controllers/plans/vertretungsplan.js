@@ -107,7 +107,7 @@ export default Controller.extend({
         },
 
         isShowingeditSubstitutionModal: false,
-        async editSubstitution() {
+        async editSubstitution(editAndNext) {
             const itemToMutate = {
                 period: this.itemToEditPeriod,
                 class: this.itemToEditClass,
@@ -170,6 +170,9 @@ export default Controller.extend({
 
             this.toggleProperty('showSubstitutionCard');
             this.toggleProperty('isShowingeditSubstitutionModal');
+            if(editAndNext && editAndNext===true){
+                this.send('toggleDisplay');
+            }
             this.send('refreshPage');
         },
         toggleeditSubstitutionModal() {
