@@ -6,12 +6,20 @@
         </h2>
     </GhCanvasHeader>
     <i>Noch nicht verfügbar</i>
-    <input
+{{!--     <input
   multiple="true"
   onchange={{action "uploadImage"}}
   accept="image/png,image/jpeg,application/pdf"
   type="file"
-/>
+/> --}}
+    <GhFileUpload
+                            @id="importfile"
+                            @classNames="flex"
+                            @uploadButtonText="Hochladen"
+                            @onUpload={{action "onUpload"}}
+                            @acceptEncoding="application/pdf"
+                            data-test-file-input="import"
+                        />
     </div>
 </section>
 {{outlet}}
