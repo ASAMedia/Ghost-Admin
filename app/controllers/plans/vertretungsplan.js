@@ -22,6 +22,7 @@ export default Controller.extend({
     },
     actions: {
         switchPlan(params) {
+            this.updateVars();
             const url = this.url.slice(this.url.lastIndexOf('#') + 1, this.url.lastIndexOf('/', this.url.lastIndexOf('/') - 1));
             this.url = `${url}/${params}/${this.vpModel.date}`;
             this.vpModel.plan = params;
