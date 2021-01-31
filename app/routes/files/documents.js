@@ -10,8 +10,13 @@ const { get, set } = Ember;
 export default AuthenticatedRoute.extend(CurrentUserSettings, {
     config: service(),
     settings: service(),
-
     accept: ['application/pdf'],
+    
+    beforeModel() {
+      this._super(...arguments);
+      
+    },
+
     uploadUrl: computed(function () {
         return `${ghostPaths().apiRoot}/themes/upload/`;
     }),

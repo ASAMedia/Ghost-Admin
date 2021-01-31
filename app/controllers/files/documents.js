@@ -1,15 +1,19 @@
 import Controller from '@ember/controller';
-import { get } from '@ember/object';
-import { task } from 'ember-concurrency';
 import { inject as service } from '@ember/service';
 import { run } from '@ember/runloop';
 
 export default Controller.extend({
     ajax: service(),
-
+    fileList:[],
     init() {
         this._super(...arguments);
+        this.getFileList();
     },
+    async getFileList(){
+      const response = await fetch(`${window.location.origin}/content/api/files/listAll/`).then(response=>response.json());
+      this.fileList=response;
+    },
+    
     actions: {
         async onUpload(file) {
             let ajax = this.ajax;

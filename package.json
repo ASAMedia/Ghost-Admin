@@ -61,6 +61,7 @@
     "ember-cli-app-version": "4.0.0",
     "ember-cli-babel": "7.23.0",
     "ember-cli-chart": "3.7.2",
+    "ember-cli-clipboard": "^0.15.0",
     "ember-cli-cors": "^0.0.2",
     "ember-cli-dependency-checker": "3.2.0",
     "ember-cli-deprecation-workflow": "1.0.1",
