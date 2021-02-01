@@ -1,4 +1,5 @@
 import Controller from '@ember/controller';
+import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { run } from '@ember/runloop';
 
@@ -11,7 +12,7 @@ export default Controller.extend({
     },
     async getFileList(){
       const response = await fetch(`${window.location.origin}/content/api/files/listAll/`).then(response=>response.json());
-      this.fileList=response;
+      this.set('fileList',response);
     },
     
     actions: {
@@ -42,7 +43,19 @@ export default Controller.extend({
 
                     return xhr;
                 }
+            }).catch((response) => {
+                console.log(response);
             });
+            this.getFileList();
+        },
+        async deleteFile(file){
+          const response = await fetch(`${window.location.origin}/ghost/api/v2/admin/documents/delete`, {
+            method: 'post',
+            headers: {
+              file: file.filePath
+            }
+        });
+        this.getFileList();
         },
         triggerFileDialog(event) {
             // simulate click to open file dialog
