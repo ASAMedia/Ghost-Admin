@@ -39,7 +39,7 @@
         </ul>
         {{/if}}
 
-        {{#unless (gh-user-is-planseditor this.session.user)}}
+        {{#unless (gh-user-is-only-planseditor this.session.user)}}
         <ul class="gh-nav-list gh-nav-manage">
             <li class="gh-nav-list-h">Manage</li>
             <li class="gh-nav-list-new relative">
@@ -95,7 +95,7 @@
         {{/unless}}
 
         {{!-- custom field for document upload--}}
-        {{#unless (gh-user-is-planseditor this.session.user)}}
+        {{#unless (gh-user-is-only-planseditor this.session.user)}}
         <ul class="gh-nav-list">
             <li class="gh-nav-list-h">Dokumente</li>
             <li class="relative">
