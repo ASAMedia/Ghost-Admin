@@ -13,7 +13,7 @@ export default Controller.extend({
         this.getFileList();
     },
     async getFileList(){
-      const response = await fetch(`${window.location.origin}/content/api/files/listAll/`).then(response=>response.json());
+      const response = await fetch(`${window.location.origin}/content/api/timetable/listAll/`).then(response=>response.json());
       this.set('fileList',response);
     },
     
@@ -32,7 +32,7 @@ export default Controller.extend({
                 formData.append(key, this.paramsHash[key]);
             });
 
-            let response = await ajax.post(`${window.location.origin}/ghost/api/v3/admin/files/upload/`, {
+            let response = await ajax.post(`${window.location.origin}/ghost/api/v3/admin/timetable/upload/`, {
                 data: formData,
                 processData: false,
                 contentType: false,
@@ -56,7 +56,7 @@ export default Controller.extend({
         },
         async deleteFile(file){
             let fileToDelete=file || this.fileToDelete;
-          const response = await fetch(`${window.location.origin}/ghost/api/v2/admin/documents/delete`, {
+          const response = await fetch(`${window.location.origin}/ghost/api/v2/admin/timetables/delete`, {
             method: 'post',
             headers: {
               file: fileToDelete.filePath

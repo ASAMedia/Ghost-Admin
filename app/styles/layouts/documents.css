@@ -1,7 +1,7 @@
 .documents-flex-container {
   display: flex;
   align-items: left;
-  justify-content: left;
+  justify-content: flex-end;
   flex-wrap: wrap;
   flex-direction: row-reverse;
 }
