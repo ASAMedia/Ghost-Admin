@@ -13,7 +13,7 @@ export default Controller.extend({
         this.getFileList();
     },
     async getFileList(){
-      const response = await fetch(`${window.location.origin}/content/api/timetable/listAll/`).then(response=>response.json());
+      const response = await fetch(`${window.location.origin}/content/api/timetable/listall/`).then(response=>response.json());
       this.set('fileList',response);
     },
     

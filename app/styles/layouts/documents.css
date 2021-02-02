@@ -94,3 +94,6 @@
   visibility: visible;
   opacity: 1;
 }
+.documents-flex-container .name{
+  line-break: anywhere;
+}
