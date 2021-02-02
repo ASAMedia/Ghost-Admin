@@ -39,6 +39,7 @@
         </ul>
         {{/if}}
 
+        {{#unless (gh-user-is-only-planseditor this.session.user)}}
         <ul class="gh-nav-list gh-nav-manage">
             <li class="gh-nav-list-h">Manage</li>
             <li class="gh-nav-list-new relative">
@@ -91,6 +92,18 @@
             {{/if}}
             <li><LinkTo @route="staff" data-test-nav="staff">{{svg-jar "staff"}}Staff</LinkTo></li>
         </ul>
+        {{/unless}}
+
+        {{!-- custom field for document upload--}}
+        {{#unless (gh-user-is-only-planseditor this.session.user)}}
+        <ul class="gh-nav-list">
+            <li class="gh-nav-list-h">Dokumente</li>
+            <li class="relative">
+                <LinkTo id="filesDocumentsBtn" @route="files.documents" data-test-nav="dokumente">{{svg-jar "folder"}}Dokumente</LinkTo>
+            </li>
+        </ul>
+        {{/unless}}
+
         {{#if (gh-user-can-admin this.session.user)}}
             <ul class="gh-nav-list gh-nav-settings">
                 <li class="gh-nav-list-h">Settings</li>

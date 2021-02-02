@@ -19,7 +19,7 @@ export default AuthenticatedRoute.extend(CurrentUserSettings, {
 
     buildRouteInfoMetadata() {
         return {
-            titleToken: 'Stundenpläne'
+            titleToken: 'Dokumente'
         };
     }
 });

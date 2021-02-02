@@ -1,0 +1,99 @@
+.documents-flex-container {
+  display: flex;
+  align-items: left;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+.documents-flex-container > div {
+  background-color: #f1f1f1;
+  border-radius: 4px;
+  width: 200px;
+  margin: 5px;
+  text-align: center;
+  padding: 6px 12px;
+  border: 1px solid #d6e3eb;
+  background: #fff;
+  color: #343f44;
+  font-size: 1.5rem;
+  font-weight: 400;
+}
+.document-view-full-link{
+  width: 100%;
+  min-width: 100%;
+  font-weight: 200;
+  font-size: 11px;
+  font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+}
+.documents-flex-container .copy-btn{
+  width: 100%;
+  height: 23px;
+  cursor: pointer;
+  padding: 0 1px 1px 2px;
+}
+.documents-flex-container .copy-btn:active{
+  border: #7faec5 solid 1px;
+  background-color: #a5e1ff9b;
+  border-radius: 2px;
+}
+.documents-flex-container .clipboardDiv{
+  align-items: center;
+  border: 1px solid #ccc;
+  display: flex;
+  justify-content: space-between;
+  margin: 2px;
+  padding: 2px 20px 2px 2px
+}
+.documents-hr{
+  margin: 1em 0;
+}
+.documents-flex-container .delete svg{
+  cursor: pointer;
+  padding: 3px;
+  transition: border 0.5s;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+.documents-flex-container .delete svg:hover{
+  border: 1px solid rgb(197, 197, 197);  
+}
+.documents-flex-container .delete{
+  text-align: left;
+  margin-bottom: -10px;
+}
+
+.documents-flex-container .delete svg ~ .tooltiptext {
+  visibility: hidden;
+  width: 80px;
+  background-color: rgb(0, 0, 0);
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  font-size: 9px;
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  opacity: 0;
+  transition: opacity 0.5s;
+  transition-delay: 2s, 250ms;
+  z-index: 1;
+}
+.documents-flex-container .delete svg ~ .tooltiptext::after {
+  content: " ";
+  position: absolute;
+  top: 50%;
+  right: 100%; /* To the left of the tooltip */
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent black transparent transparent;
+}
+/* Show the tooltip text when you mouse over the tooltip container */
+.documents-flex-container .delete svg:hover ~ .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+.documents-flex-container .name{
+  line-break: anywhere;
+}
