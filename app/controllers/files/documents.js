@@ -15,6 +15,7 @@ export default Controller.extend({
     async getFileList(){
       const response = await fetch(`${window.location.origin}/content/api/files/listall/`).then(response=>response.json());
       this.set('fileList',response);
+      //console.log(this.fileList);
     },
     
     actions: {
