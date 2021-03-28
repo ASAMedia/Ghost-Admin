@@ -33,6 +33,20 @@
                 </a>
             </li>
         </ul>
+
+        {{!-- custom field for vertretungsplan--}}
+        {{#if (gh-user-can-plans this.session.user)}}
+        <ul class="gh-nav-list">
+            <li class="gh-nav-list-h">Pläne</li>
+            <li class="relative">
+                <LinkTo id="plansVpBtn" @route="plans.vertretungsplan" @models={{array 'ck0tg2e3d00000iqj5bk4a6pc' (moment-format (now) 'YYYY-MM-DD')}} data-test-nav="vertretungsplan" @current-when={{this.isOnVpSite}}>{{svg-jar "vertretungsplan"}}Vertretungsplan</LinkTo>
+                <LinkTo id="plansTimetableBtn" @route="plans.timetable" data-test-nav="timetable">{{svg-jar "calendar"}}Stundenpläne</LinkTo>
+            </li>
+        </ul>
+        {{/if}}
+
+        {{!-- do not show for only-planseditors--}}
+        {{#unless (gh-user-is-only-planseditor this.session.user)}}
         <ul class="gh-nav-list gh-nav-manage">
             <li class="gh-nav-list-new relative">
                 <GhLinkToCustomViewsIndex @route="posts" @query={{reset-query-params "posts"}} data-test-nav="posts">{{svg-jar "posts"}}Posts</GhLinkToCustomViewsIndex>
@@ -87,7 +101,18 @@
             {{/if}}
             <li><LinkTo @route="staff" data-test-nav="staff">{{svg-jar "staff"}}Staff</LinkTo></li>
         </ul>
+        {{/unless}}
 
+        {{!-- custom field for document upload--}}
+        {{#unless (gh-user-is-only-planseditor this.session.user)}}
+        <ul class="gh-nav-list">
+            <li class="gh-nav-list-h">Dokumente</li>
+            <li class="relative">
+                <LinkTo id="filesDocumentsBtn" @route="files.documents" data-test-nav="dokumente">{{svg-jar "folder"}}Dokumente</LinkTo>
+            </li>
+        </ul>
+        {{/unless}}
+        
         {{#if this.session.user.isOwner}}
         <ul class="gh-nav-list">
             {{#if this.showBilling}}
