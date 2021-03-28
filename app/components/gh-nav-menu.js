@@ -1,28 +1,15 @@
 import Component from '@ember/component';
-import ShortcutsMixin from 'ghost-admin/mixins/shortcuts';
-import calculatePosition from 'ember-basic-dropdown/utils/calculate-position';
-import ctrlOrCmd from 'ghost-admin/utils/ctrl-or-cmd';
-import {and, equal, match, or} from '@ember/object/computed';
-import {computed} from '@ember/object';
-import {getOwner} from '@ember/application';
-import {htmlSafe} from '@ember/string';
+import {match} from '@ember/object/computed';
 import {inject as service} from '@ember/service';
 
-export default Component.extend(ShortcutsMixin, {
-    billing: service(),
-    config: service(),
-    customViews: service(),
-    feature: service(),
-    ghostPaths: service(),
-    navigation: service(),
+export default Component.extend({
+    settings: service(),
     router: service(),
-    session: service(),
-    ui: service(),
-    whatsNew: service(),
 
     tagName: 'nav',
     classNames: ['gh-nav'],
 
+<<<<<<< HEAD
     iconStyle: '',
 
     showSearchModal: false,
@@ -121,4 +108,7 @@ export default Component.extend(ShortcutsMixin, {
 
         this.set('iconStyle', htmlSafe(`background-image: url(${iconUrl})`));
     }
+=======
+    isSettingsRoute: match('router.currentRouteName', /^settings/)
+>>>>>>> 2e1c41e20297d95584a7e8152b0f6582b7f63fb8
 });

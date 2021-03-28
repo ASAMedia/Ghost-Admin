@@ -1,3 +1,4 @@
+import ghostPaths from 'ghost-admin/utils/ghost-paths';
 import mockApiKeys from './config/api-keys';
 import mockAuthentication from './config/authentication';
 import mockConfig from './config/config';
@@ -26,8 +27,7 @@ export default function () {
     // _must_ be called before the namespace property is set
     this.passthrough('/ghost/assets/**');
 
-    // this.urlPrefix = '';    // make this `http://localhost:8080`, for example, if your API is on a different server
-    this.namespace = '/ghost/api/v3/admin'; // make this `api`, for example, if your API is namespaced
+    this.namespace = ghostPaths().apiRoot;
     this.timing = 1000; // delay for each request, automatically set to 0 during testing
     this.logging = true;
 
@@ -49,8 +49,7 @@ export default function () {
 
 // Mock all endpoints here as there is no real API during testing
 export function testConfig() {
-    // this.urlPrefix = '';    // make this `http://localhost:8080`, for example, if your API is on a different server
-    this.namespace = '/ghost/api/v3/admin'; // make this `api`, for example, if your API is namespaced
+    this.namespace = ghostPaths().apiRoot;
     // this.timing = 400;      // delay for each request, automatically set to 0 during testing
     this.logging = false;
 
@@ -100,14 +99,14 @@ export function testConfig() {
                 {
                     title: 'Custom image alt tags',
                     custom_excerpt: null,
-                    html: '<p>We just shipped custom image alt tag support in the Ghost editor. This is one of our most requested features - and great news for accessibility and search engine optimisation for your Ghost publication.</p><p>Previously, you\'d need to use a Markdown card to add an image alt tag. Now you can create alt tags on the go directly from the editor, without the need to add any additional cards or custom tags.</p><!--kg-card-begin: image--><figure class="kg-card kg-image-card"><img src="https://mainframe.ghost.io/content/images/2019/08/image-alt-tag.gif" class="kg-image"></figure><!--kg-card-end: image--><p>To write your alt tag, hit the <code>alt</code> button on the right in the caption line, type your alt text and then hit the button again to return to the caption text. </p><p><em><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><a href="https://ghost.org/pricing/">Ghost(Pro)</a></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong> users already have access to custom image alt tags. Self hosted developers can use <a href="https://ghost.org/docs/api/ghost-cli/">Ghost-CLI</a> to install the latest release!</em></p>',
+                    html: '<p>We just shipped custom image alt tag support in the Ghost editor. This is one of our most requested features - and great news for accessibility and search engine optimisation for your Ghost publication.</p><p>Previously, you\'d need to use a Markdown card to add an image alt tag. Now you can create alt tags on the go directly from the editor, without the need to add any additional cards or custom tags.</p><!--kg-card-begin: image--><figure class="kg-card kg-image-card"><img src="https://ghost.org/changelog/content/images/2019/08/image-alt-tag.gif" class="kg-image"></figure><!--kg-card-end: image--><p>To write your alt tag, hit the <code>alt</code> button on the right in the caption line, type your alt text and then hit the button again to return to the caption text. </p><p><em><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><a href="https://ghost.org/pricing/">Ghost(Pro)</a></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong> users already have access to custom image alt tags. Self hosted developers can use <a href="https://ghost.org/docs/ghost-cli/">Ghost-CLI</a> to install the latest release!</em></p>',
                     slug: 'image-alt-text-support',
                     published_at: '2019-08-05T07:46:16.000+00:00',
-                    url: 'https://ghost.org/blog/image-alt-text-support/'
+                    url: 'https://ghost.org/changelog/image-alt-text-support/'
                 }
             ],
             changelogMajor: [],
-            changelogUrl: 'https://ghost.org/blog/'
+            changelogUrl: 'https://ghost.org/changelog/'
         };
     });
 }

@@ -50,9 +50,9 @@ export default Service.extend({
     notifications: service(),
     lazyLoader: service(),
 
-    members: feature('members'),
     emailAnalytics: feature('emailAnalytics'),
     nightShift: feature('nightShift', {user: true, onChange: '_setAdminTheme'}),
+    launchComplete: feature('launchComplete', {user: true}),
 
     _user: null,
 
@@ -126,11 +126,9 @@ export default Service.extend({
 
         return this.lazyLoader.loadStyle('dark', 'assets/ghost-dark.css', true).then(() => {
             $('link[title=dark]').prop('disabled', !nightShift);
-            $('link[title=light]').prop('disabled', nightShift);
         }).catch(() => {
             //TODO: Also disable toggle from settings and Labs hover
             $('link[title=dark]').prop('disabled', true);
-            $('link[title=light]').prop('disabled', false);
         });
     }
 });

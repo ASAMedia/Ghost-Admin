@@ -44,6 +44,10 @@ module.exports = function (environment) {
         moment: {
             includeTimezone: 'all',
             includeLocales: ['de']
+        },
+
+        emberKeyboard: {
+            disableInputsInitializer: true
         }
     };
 
